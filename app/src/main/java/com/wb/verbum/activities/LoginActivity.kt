@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.room.Room
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -18,6 +19,13 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
 import com.wb.verbum.R
 import com.wb.verbum.databinding.LoginLayoutBinding
+import com.wb.verbum.db.AppDatabase
+import com.wb.verbum.multithreading.syncUserDataFromFirebaseToLocal
+import com.wb.verbum.service.FirebaseService
+import com.wb.verbum.service.UserService
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class LoginActivity: ComponentActivity() {
 
@@ -29,6 +37,7 @@ class LoginActivity: ComponentActivity() {
         binding = LoginLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
         auth = Firebase.auth
+        Room.databaseBuilder(this.applicationContext, AppDatabase::class.java, "app-database").build()
         val currentUser = auth.currentUser
         if (currentUser != null) {
             // TODO: Attempt Sync
@@ -85,6 +94,7 @@ class LoginActivity: ComponentActivity() {
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun updateUI(account: GoogleSignInAccount) {
         val credential = GoogleAuthProvider.getCredential(account.idToken , null)
         auth.signInWithCredential(credential).addOnCompleteListener {
@@ -92,6 +102,18 @@ class LoginActivity: ComponentActivity() {
                 val intent : Intent = Intent(this , HomeActivity::class.java)
                 intent.putExtra("email" , account.email)
                 intent.putExtra("name" , account.displayName)
+                val userService = UserService(AppDatabase.getDatabase(this).userDao())
+                val firebaseService = FirebaseService()
+
+                val user = auth.currentUser
+                val userUuid = user?.uid // Accessing the UID of the signed-in user
+                GlobalScope.launch {
+                    // Calling the suspend function from within the coroutine
+                    if (userUuid != null) {
+                        syncUserDataFromFirebaseToLocal(userService, firebaseService, user)
+                    }
+                }
+
                 startActivity(intent)
             }else{
                 Toast.makeText(this, it.exception.toString() , Toast.LENGTH_SHORT).show()
