@@ -1,7 +1,7 @@
 package com.wb.verbum.service
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.wb.verbum.entities.User
+import com.wb.verbum.model.User
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine

@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import java.io.Serializable
 
 @Entity(tableName = "users")
-class User : Serializable {
+class UserDB : Serializable {
 
     @PrimaryKey
     @ColumnInfo(name = "UUID")
@@ -21,8 +21,8 @@ class User : Serializable {
     @ColumnInfo(name = "lastUpdated")
     var lastUpdated: String? = null
 
-    // Room doesn't directly support storing lists of complex objects
-    // You might need to restructure your data or use TypeConverters for complex types
+    @ColumnInfo(name = "history")
+    var exerciseHistory: String? = null
 
     constructor()
 
@@ -30,11 +30,13 @@ class User : Serializable {
         uuid: String,
         name: String?,
         email: String?,
-        lastUpdated: String?
+        lastUpdated: String?,
+        exerciseHistory: String?
     ) {
         this.uuid = uuid
         this.name = name
         this.email = email
         this.lastUpdated = lastUpdated
+        this.exerciseHistory = exerciseHistory
     }
 }

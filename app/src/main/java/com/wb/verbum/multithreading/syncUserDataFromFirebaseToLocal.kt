@@ -1,13 +1,17 @@
 package com.wb.verbum.multithreading
 
 import com.google.firebase.auth.FirebaseUser
-import com.wb.verbum.entities.User
+import com.wb.verbum.model.User
 import com.wb.verbum.service.FirebaseService
 import com.wb.verbum.service.UserService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-suspend fun syncUserDataFromFirebaseToLocal(userService: UserService, firebaseService: FirebaseService, user: FirebaseUser?) {
+suspend fun syncUserDataFromFirebaseToLocal(
+    userService: UserService,
+    firebaseService: FirebaseService,
+    user: FirebaseUser?
+) {
     withContext(Dispatchers.IO) {
         try {
             // Get user data from Firebase
@@ -20,7 +24,9 @@ suspend fun syncUserDataFromFirebaseToLocal(userService: UserService, firebaseSe
             val localLastUpdated = localUserData?.lastUpdated?.toLong() ?: 0
             val firebaseLastUpdated = firebaseUserData?.lastUpdated?.toLong() ?: 0
 
-            if (localLastUpdated == firebaseLastUpdated && localLastUpdated == 0L){
+            if (localLastUpdated.toInt()
+                    .toLong() == firebaseLastUpdated && localLastUpdated == 0L
+            ) {
                 val newUser = User()
                 if (user != null) {
                     newUser.uuid = user.uid
@@ -32,6 +38,7 @@ suspend fun syncUserDataFromFirebaseToLocal(userService: UserService, firebaseSe
                     newUser.email = user.email
                 }
                 newUser.lastUpdated = (System.currentTimeMillis() / 1000).toString()
+                newUser.exerciseHistory = arrayListOf()
                 firebaseService.updateUserData(newUser)
                 userService.insertUser(newUser)
             }
@@ -43,7 +50,7 @@ suspend fun syncUserDataFromFirebaseToLocal(userService: UserService, firebaseSe
                 }
             } else {
                 // If the local data is more recent, update the Firebase data
-                if (firebaseLastUpdated < localLastUpdated){
+                if (firebaseLastUpdated < localLastUpdated) {
                     if (localUserData != null) {
                         firebaseService.updateUserData(localUserData)
                     }
