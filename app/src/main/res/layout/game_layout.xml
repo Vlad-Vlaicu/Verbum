@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/game_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textSize="24sp"
+        android:text="Corpul uman"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:maxLines="3"
+        android:paddingStart="10dp"
+        android:paddingEnd="5dp"
+        android:text="Potriveste partile corpului  dasd  da s dasdd adas dasda dasdas dasdas das d das dasd a d daas "
+        android:textSize="16sp"
+        android:paddingBottom="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/favourite_icon" />
+
+    <TextView
+        android:id="@+id/tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:paddingStart="5dp"
+        android:text="3-5 ani"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/game_title" />
+
+    <ImageView
+        android:id="@+id/download_delete_icon"
+        android:layout_width="33dp"
+        android:layout_height="33dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/favourite_icon"
+        app:layout_constraintStart_toEndOf="@+id/favourite_icon"
+        app:layout_constraintTop_toTopOf="@+id/favourite_icon"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/download_icon" />
+
+    <ImageView
+        android:id="@+id/favourite_icon"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintStart_toEndOf="@+id/game_title"
+        app:layout_constraintTop_toBottomOf="@+id/game_title"
+        app:srcCompat="@drawable/heart_full_icon" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

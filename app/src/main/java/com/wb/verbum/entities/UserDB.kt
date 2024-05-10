@@ -24,6 +24,9 @@ class UserDB : Serializable {
     @ColumnInfo(name = "history")
     var exerciseHistory: String? = null
 
+    @ColumnInfo(name = "favGames")
+    var favGames: String? = null
+
     constructor()
 
     constructor(
@@ -31,12 +34,14 @@ class UserDB : Serializable {
         name: String?,
         email: String?,
         lastUpdated: String?,
-        exerciseHistory: String?
+        exerciseHistory: String?,
+        favGames: String?
     ) {
         this.uuid = uuid
         this.name = name
         this.email = email
         this.lastUpdated = lastUpdated
         this.exerciseHistory = exerciseHistory
+        this.favGames = favGames
     }
 }
