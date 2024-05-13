@@ -3,6 +3,10 @@ package com.wb.verbum.service
 import com.wb.verbum.dao.UserDao
 import com.wb.verbum.mappers.UserMapper
 import com.wb.verbum.model.User
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 class UserService(private val userDao: UserDao) {
@@ -20,10 +24,13 @@ class UserService(private val userDao: UserDao) {
         return user?.let { userMapper.mapUserDBtoUser(it) }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun update(user: User){
         user.lastUpdated = (System.currentTimeMillis() / 1000).toString()
         val userDB = userMapper.mapUserToUserDB(user = user)
-        userDao.update(userDB);
+        GlobalScope.launch(Dispatchers.IO){
+            userDao.update(userDB)
+        }
     }
 
     fun updateByFirebase(user: User){

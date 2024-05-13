@@ -1,12 +1,11 @@
 package com.wb.verbum.activities.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.wb.verbum.R
 import com.wb.verbum.model.Game
@@ -14,6 +13,8 @@ import com.wb.verbum.model.User
 import com.wb.verbum.multithreading.downloadResources
 import com.wb.verbum.service.StorageService
 import com.wb.verbum.service.UserService
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class HomeGamesRecycleViewAdapter(
@@ -22,7 +23,6 @@ class HomeGamesRecycleViewAdapter(
     private val category: String,
     private val storageService: StorageService,
     private val userService: UserService,
-    private val lifecycleOwner: LifecycleOwner
 ) :
 
     RecyclerView.Adapter<HomeGamesRecycleViewAdapter.MyViewHolder>() {
@@ -41,8 +41,9 @@ class HomeGamesRecycleViewAdapter(
         return MyViewHolder(view)
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val RESOURCES_TAG = 1
+        val RESOURCES_TAG = R.id.download_delete_icon
 
         holder.gameTitle.text = gamesList[position].name
         holder.description.text = gamesList[position].description
@@ -55,10 +56,10 @@ class HomeGamesRecycleViewAdapter(
         }
 
         holder.downloadDeleteIcon.setImageResource(R.drawable.delete_icon)
-        holder.downloadDeleteIcon.setTag(RESOURCES_TAG, true)
+        holder.downloadDeleteIcon.setTag(RESOURCES_TAG, false)
 
         for (res in gamesList[position].requiredResources!!) {
-            if (storageService.doesFileExistsInStorage(res)) {
+            if (!storageService.doesFileExistsInStorage(res)) {
                 holder.downloadDeleteIcon.setImageResource(R.drawable.download_icon)
                 holder.downloadDeleteIcon.setTag(RESOURCES_TAG, false)
                 break
@@ -109,7 +110,7 @@ class HomeGamesRecycleViewAdapter(
                     }
                 }
 
-                lifecycleOwner.lifecycleScope.launch {
+                GlobalScope.launch {
                     downloadResources(
                         resToBeDownloaded,
                         holder,
@@ -124,6 +125,7 @@ class HomeGamesRecycleViewAdapter(
     }
 
     override fun getItemCount(): Int {
+        Log.d("COUNTER", "I counted " + gamesList.size)
         return gamesList.size
     }
 }

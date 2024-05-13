@@ -21,8 +21,8 @@ suspend fun downloadResources(
 ) {
     withContext(Dispatchers.IO) {
         try {
-            holder.downloadDeleteIcon.isClickable = false
-            holder.downloadDeleteIcon.setTag(1, true)
+            //holder.downloadDeleteIcon.isClickable = false
+            holder.downloadDeleteIcon.setTag(R.id.download_delete_icon, true)
 
             val storage = Firebase.storage
             val storageRef = storage.reference
@@ -39,9 +39,9 @@ suspend fun downloadResources(
                     .addOnFailureListener { exception ->
                         // Handle any errors
                         if (exception is IOException) {
-                            holder.downloadDeleteIcon.setTag(1, false)
+                            holder.downloadDeleteIcon.setTag(R.id.download_delete_icon, false)
                         } else {
-                            holder.downloadDeleteIcon.setTag(1, false)
+                            holder.downloadDeleteIcon.setTag(R.id.download_delete_icon, false)
                         }
                     }
             }
@@ -52,7 +52,7 @@ suspend fun downloadResources(
         } catch (e: Exception) {
             // Handle exceptions
             e.printStackTrace()
-            holder.downloadDeleteIcon.setTag(1, false)
+            holder.downloadDeleteIcon.setTag(R.id.download_delete_icon, false)
 
         } finally {
             holder.downloadDeleteIcon.isClickable = true
