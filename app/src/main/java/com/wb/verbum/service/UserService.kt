@@ -10,6 +10,7 @@ class UserService(private val userDao: UserDao) {
     val userMapper = UserMapper()
 
     suspend fun insertUser(user: User) {
+        user.downloadedGames = null
         val userDB = userMapper.mapUserToUserDB(user = user)
         userDao.insert(userDB)
     }
@@ -19,12 +20,18 @@ class UserService(private val userDao: UserDao) {
         return user?.let { userMapper.mapUserDBtoUser(it) }
     }
 
-    suspend fun update(user: User){
+    fun update(user: User){
+        user.lastUpdated = (System.currentTimeMillis() / 1000).toString()
         val userDB = userMapper.mapUserToUserDB(user = user)
         userDao.update(userDB);
     }
 
-    suspend fun delete(user: User){
+    fun updateByFirebase(user: User){
+        val userDB = userMapper.mapUserToUserDB(user = user)
+        userDao.update(userDB);
+    }
+
+    fun delete(user: User){
         val userDB = userMapper.mapUserToUserDB(user = user)
         userDao.delete(userDB)
     }

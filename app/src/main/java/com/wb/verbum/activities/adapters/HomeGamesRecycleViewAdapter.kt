@@ -1,19 +1,30 @@
 package com.wb.verbum.activities.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.wb.verbum.R
-import com.wb.verbum.activities.HomeActivity
 import com.wb.verbum.model.Game
+import com.wb.verbum.model.User
+import com.wb.verbum.multithreading.downloadResources
 import com.wb.verbum.service.StorageService
-import java.io.IOException
+import com.wb.verbum.service.UserService
+import kotlinx.coroutines.launch
 
-class HomeGamesRecycleViewAdapter (private val gamesList: List<Game>, private val favouriteGames: List<String>, private val category: String, private val storageService: StorageService) :
+class HomeGamesRecycleViewAdapter(
+    private val gamesList: List<Game>,
+    private val user: User,
+    private val category: String,
+    private val storageService: StorageService,
+    private val userService: UserService,
+    private val lifecycleOwner: LifecycleOwner
+) :
+
     RecyclerView.Adapter<HomeGamesRecycleViewAdapter.MyViewHolder>() {
 
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -31,41 +42,88 @@ class HomeGamesRecycleViewAdapter (private val gamesList: List<Game>, private va
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val RESOURCES_TAG = 1
+
         holder.gameTitle.text = gamesList[position].name
         holder.description.text = gamesList[position].description
         holder.tag.text = category
 
-        if (gamesList[position].uuid in favouriteGames) {
+        if (user.favGames?.contains(gamesList[position].uuid) == true) {
             holder.favouriteIcon.setImageResource(R.drawable.heart_full_icon)
         } else {
             holder.favouriteIcon.setImageResource(R.drawable.heart_empty_icon)
         }
 
         holder.downloadDeleteIcon.setImageResource(R.drawable.delete_icon)
+        holder.downloadDeleteIcon.setTag(RESOURCES_TAG, true)
 
         for (res in gamesList[position].requiredResources!!) {
-            val url = "games_resources/$res"
-            if (storageService.doesFileExistsInStorage(url)){
+            if (storageService.doesFileExistsInStorage(res)) {
                 holder.downloadDeleteIcon.setImageResource(R.drawable.download_icon)
+                holder.downloadDeleteIcon.setTag(RESOURCES_TAG, false)
                 break
             }
         }
 
-        //TODO: buttonsOnClick implementations
+        holder.favouriteIcon.setOnClickListener {
+            if (user.favGames?.contains(gamesList[position].uuid) == true) {
+                holder.favouriteIcon.setImageResource(R.drawable.heart_empty_icon)
+                user.favGames!!.remove(gamesList[position].uuid)
+                userService.update(user)
+            } else {
+                holder.favouriteIcon.setImageResource(R.drawable.heart_full_icon)
+                user.favGames!!.add(gamesList[position].uuid)
+                userService.update(user)
+            }
+        }
 
+        holder.downloadDeleteIcon.setOnClickListener {
+            if (holder.downloadDeleteIcon.getTag(RESOURCES_TAG) as Boolean) {  // delete resources
+
+                for (res in gamesList[position].requiredResources!!) { // for each resources to be deleted
+                    for (game in gamesList) { //iterate through games' resources
+                        if (game == gamesList[position]) { //skip if the currentGame
+                            continue
+                        }
+                        if (user.downloadedGames?.contains(game.uuid) == true) { // if game was downloaded
+                            if (game.requiredResources?.contains(res) == true) { //skip deleting file so we don't destroy other games accidentally
+                                continue
+                            }
+                        }
+
+                        storageService.deleteFileFromStorage(res)
+                    }
+                }
+                user.downloadedGames?.remove(gamesList[position].uuid) //update user Data
+                userService.update(user)
+
+                holder.downloadDeleteIcon.setTag(RESOURCES_TAG, false)
+                holder.downloadDeleteIcon.setImageResource(R.drawable.download_icon)
+            } else { //download resources
+                val resToBeDownloaded = arrayListOf<String>()
+
+                for (res in gamesList[position].requiredResources!!) {
+
+                    if (!storageService.doesFileExistsInStorage(res)) {
+                        resToBeDownloaded.add(res)
+                    }
+                }
+
+                lifecycleOwner.lifecycleScope.launch {
+                    downloadResources(
+                        resToBeDownloaded,
+                        holder,
+                        storageService,
+                        user,
+                        userService,
+                        gamesList[position].uuid
+                    )
+                }
+            }
+        }
     }
 
     override fun getItemCount(): Int {
         return gamesList.size
-    }
-
-    fun doesAssetExists(context: Context, fileName: String): Boolean {
-        return try {
-            val inputStream = context.assets.open(fileName)
-            inputStream.close()
-            true
-        } catch (e: IOException) {
-            false
-        }
     }
 }

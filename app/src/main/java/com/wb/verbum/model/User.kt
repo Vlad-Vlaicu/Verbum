@@ -16,6 +16,8 @@ class User : Serializable {
 
     var favGames: MutableList<String>? = null
 
+    var downloadedGames: MutableList<String>? = null
+
     constructor()
 
     constructor(
@@ -24,7 +26,8 @@ class User : Serializable {
         email: String?,
         lastUpdated: String?,
         exerciseHistory: MutableList<ExerciseInfo>?,
-        favGames: MutableList<String>?
+        favGames: MutableList<String>?,
+        downloadedGames: MutableList<String>?
     ) {
         this.uuid = uuid
         this.name = name
@@ -32,5 +35,6 @@ class User : Serializable {
         this.lastUpdated = lastUpdated
         this.exerciseHistory = exerciseHistory
         this.favGames = favGames
+        this.downloadedGames = downloadedGames
     }
 }

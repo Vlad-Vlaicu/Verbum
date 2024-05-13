@@ -16,10 +16,10 @@ interface UserDao {
     fun getUserByUUID(uuid: String): UserDB?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun update(user: UserDB)
+    fun update(user: UserDB)
 
     @Delete
-    suspend fun delete(user: UserDB)
+    fun delete(user: UserDB)
 
     @Query("SELECT * FROM users")
     fun getAllUsers(): List<UserDB>

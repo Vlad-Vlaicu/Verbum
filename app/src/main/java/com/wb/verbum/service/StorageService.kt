@@ -5,6 +5,8 @@ import java.io.File
 import java.io.IOException
 
 class StorageService(private val context: Context) {
+
+    @Synchronized
     fun saveFileToStorage(data: ByteArray, fileName: String) {
         try {
             val outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE)
@@ -20,6 +22,7 @@ class StorageService(private val context: Context) {
         return file.exists()
     }
 
+    @Synchronized
     fun deleteFileFromStorage(fileName: String): Boolean {
         val file = File(context.filesDir, fileName)
         return if (file.exists()) {

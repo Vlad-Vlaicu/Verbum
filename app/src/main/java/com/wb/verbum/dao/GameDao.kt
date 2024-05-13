@@ -10,16 +10,16 @@ import com.wb.verbum.entities.GameDB
 @Dao
 interface GameDao {
     @Insert
-    suspend fun insert(game: GameDB)
+    fun insert(game: GameDB)
 
     @Query("SELECT * FROM games WHERE UUID = :uuid")
     fun getGameByUUID(uuid: String): GameDB?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun update(game: GameDB)
+    fun update(game: GameDB)
 
     @Delete
-    suspend fun delete(game: GameDB)
+    fun delete(game: GameDB)
 
     @Query("SELECT * FROM games")
     fun getAllGames(): List<GameDB>

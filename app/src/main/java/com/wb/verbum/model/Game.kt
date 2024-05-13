@@ -1,5 +1,6 @@
 package com.wb.verbum.model
 
+import com.wb.verbum.entities.GameDB
 import java.io.Serializable
 
 class Game : Serializable {
@@ -28,5 +29,18 @@ class Game : Serializable {
         this.description = description
         this.tags = tags
         this.requiredResources = requiredResources
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+
+        val otherGame = other as Game
+
+        return uuid == otherGame.uuid
+    }
+
+    override fun hashCode(): Int {
+        return uuid.hashCode()
     }
 }

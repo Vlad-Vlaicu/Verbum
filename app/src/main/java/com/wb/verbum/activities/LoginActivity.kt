@@ -1,12 +1,16 @@
 package com.wb.verbum.activities
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.room.Room
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -22,6 +26,7 @@ import com.wb.verbum.databinding.LoginLayoutBinding
 import com.wb.verbum.db.AppDatabase
 import com.wb.verbum.multithreading.syncUserDataFromFirebaseToLocal
 import com.wb.verbum.service.FirebaseService
+import com.wb.verbum.service.GameService
 import com.wb.verbum.service.UserService
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -32,6 +37,8 @@ class LoginActivity: ComponentActivity() {
     private lateinit var binding: LoginLayoutBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+    private val WRITE_EXTERNAL_STORAGE_REQUEST_CODE = 101
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = LoginLayoutBinding.inflate(layoutInflater)
@@ -40,7 +47,14 @@ class LoginActivity: ComponentActivity() {
         Room.databaseBuilder(this.applicationContext, AppDatabase::class.java, "app-database").build()
         val currentUser = auth.currentUser
         if (currentUser != null) {
-            // TODO: Attempt Sync
+            val userService = UserService(AppDatabase.getDatabase(this).userDao())
+            val firebaseService = FirebaseService()
+            val gameService = GameService(AppDatabase.getDatabase(this).gameDao())
+
+            GlobalScope.launch{
+                syncUserDataFromFirebaseToLocal(userService, gameService, firebaseService, currentUser)
+            }
+
         }
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -50,7 +64,19 @@ class LoginActivity: ComponentActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        setup()
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            // Request the permission
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                WRITE_EXTERNAL_STORAGE_REQUEST_CODE
+            )
+        } else {
+            // Permission is already granted
+            setup()
+        }
     }
 
     private fun setup() {
@@ -103,6 +129,7 @@ class LoginActivity: ComponentActivity() {
                 intent.putExtra("email" , account.email)
                 intent.putExtra("name" , account.displayName)
                 val userService = UserService(AppDatabase.getDatabase(this).userDao())
+                val gameService = GameService(AppDatabase.getDatabase(this).gameDao())
                 val firebaseService = FirebaseService()
 
                 val user = auth.currentUser
@@ -110,7 +137,7 @@ class LoginActivity: ComponentActivity() {
                 GlobalScope.launch {
                     // Calling the suspend function from within the coroutine
                     if (userUuid != null) {
-                        syncUserDataFromFirebaseToLocal(userService, firebaseService, user)
+                        syncUserDataFromFirebaseToLocal(userService, gameService, firebaseService, user)
                     }
                 }
 
@@ -118,6 +145,23 @@ class LoginActivity: ComponentActivity() {
             }else{
                 Toast.makeText(this, it.exception.toString() , Toast.LENGTH_SHORT).show()
 
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == WRITE_EXTERNAL_STORAGE_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission is granted
+                // Perform the operation that requires this permission
+                // For example, start downloading the file
+                setup()
+            } else {
+                // Permission is denied
+                // You can show a message to the user indicating why the permission is needed
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+                finish()
             }
         }
     }

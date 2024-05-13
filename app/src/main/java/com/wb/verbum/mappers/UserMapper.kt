@@ -12,6 +12,7 @@ class UserMapper {
         val gson = Gson()
         val historyJson = gson.toJson(user.exerciseHistory)
         val favGamesJson = gson.toJson(user.favGames)
+        val downloadedGamesJson = gson.toJson(user.downloadedGames)
         val userDB = UserDB()
         userDB.uuid = user.uuid
         userDB.name = user.name
@@ -19,16 +20,22 @@ class UserMapper {
         userDB.lastUpdated = user.lastUpdated
         userDB.exerciseHistory = historyJson
         userDB.favGames = favGamesJson
+        userDB.downloadedGames = downloadedGamesJson
         return userDB
     }
 
     fun mapUserDBtoUser(userDB: UserDB): User {
+        val user = User()
         val gson = Gson()
         val exerciseInfoType = object : TypeToken<MutableList<ExerciseInfo>>() {}.type
-        val favGamesType = object : TypeToken<MutableList<String>>() {}.type
+        val stringListType = object : TypeToken<MutableList<String>>() {}.type
         val history : MutableList<ExerciseInfo> = gson.fromJson(userDB.exerciseHistory, exerciseInfoType);
-        val favGames : MutableList<String> = gson.fromJson(userDB.favGames, favGamesType)
-        val user = User()
+        val favGames : MutableList<String> = gson.fromJson(userDB.favGames, stringListType)
+        if (userDB.downloadedGames == "null"){
+            user.downloadedGames = arrayListOf()
+        } else {
+            user.downloadedGames = gson.fromJson(userDB.downloadedGames, stringListType)
+        }
         user.uuid = userDB.uuid
         user.email = userDB.email
         user.name = userDB.name
