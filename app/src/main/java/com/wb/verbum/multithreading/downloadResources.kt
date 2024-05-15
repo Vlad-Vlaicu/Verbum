@@ -21,7 +21,6 @@ suspend fun downloadResources(
 ) {
     withContext(Dispatchers.IO) {
         try {
-            //holder.downloadDeleteIcon.isClickable = false
             holder.downloadDeleteIcon.setTag(R.id.download_delete_icon, true)
 
             val storage = Firebase.storage

@@ -22,6 +22,11 @@ class StorageService(private val context: Context) {
             // Get the file name without the directory path
             val fileNameWithoutPath = fileName.substringAfterLast(File.separator)
 
+            //Check if file does not exists so we avoid duplicates
+            if (doesFileExistsInStorage(fileName)) {
+                return
+            }
+
             // Save the file to the specified location
             val file = File(directory, fileNameWithoutPath)
             val outputStream = FileOutputStream(file)

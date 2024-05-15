@@ -43,7 +43,7 @@ class HomeGamesRecycleViewAdapter(
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val RESOURCES_TAG = R.id.download_delete_icon
+        val IS_GAME_PLAYABLE = R.id.download_delete_icon
 
         holder.gameTitle.text = gamesList[position].name
         holder.description.text = gamesList[position].description
@@ -56,12 +56,17 @@ class HomeGamesRecycleViewAdapter(
         }
 
         holder.downloadDeleteIcon.setImageResource(R.drawable.delete_icon)
-        holder.downloadDeleteIcon.setTag(RESOURCES_TAG, false)
+        holder.downloadDeleteIcon.setTag(IS_GAME_PLAYABLE, true)
 
         for (res in gamesList[position].requiredResources!!) {
             if (!storageService.doesFileExistsInStorage(res)) {
                 holder.downloadDeleteIcon.setImageResource(R.drawable.download_icon)
-                holder.downloadDeleteIcon.setTag(RESOURCES_TAG, false)
+                holder.downloadDeleteIcon.setTag(IS_GAME_PLAYABLE, false)
+
+                if (user.downloadedGames?.contains(gamesList[position].uuid) == true) {
+                    user.downloadedGames?.remove(gamesList[position].uuid)
+                    userService.update(user)
+                }
                 break
             }
         }
@@ -79,29 +84,33 @@ class HomeGamesRecycleViewAdapter(
         }
 
         holder.downloadDeleteIcon.setOnClickListener {
-            if (holder.downloadDeleteIcon.getTag(RESOURCES_TAG) as Boolean) {  // delete resources
+            if (holder.downloadDeleteIcon.getTag(IS_GAME_PLAYABLE) as Boolean) {  // delete resources
 
                 for (res in gamesList[position].requiredResources!!) { // for each resources to be deleted
+                    var eligibleToDelete = true
                     for (game in gamesList) { //iterate through games' resources
                         if (game == gamesList[position]) { //skip if the currentGame
                             continue
                         }
                         if (user.downloadedGames?.contains(game.uuid) == true) { // if game was downloaded
                             if (game.requiredResources?.contains(res) == true) { //skip deleting file so we don't destroy other games accidentally
-                                continue
+                                eligibleToDelete = false
                             }
                         }
 
+                    }
+                    if (eligibleToDelete) {
                         storageService.deleteFileFromStorage(res)
                     }
                 }
                 user.downloadedGames?.remove(gamesList[position].uuid) //update user Data
                 userService.update(user)
 
-                holder.downloadDeleteIcon.setTag(RESOURCES_TAG, false)
+                holder.downloadDeleteIcon.setTag(IS_GAME_PLAYABLE, false)
                 holder.downloadDeleteIcon.setImageResource(R.drawable.download_icon)
             } else { //download resources
                 val resToBeDownloaded = arrayListOf<String>()
+                holder.downloadDeleteIcon.isClickable = false
 
                 for (res in gamesList[position].requiredResources!!) {
 
@@ -120,6 +129,7 @@ class HomeGamesRecycleViewAdapter(
                         gamesList[position].uuid
                     )
                 }
+                holder.downloadDeleteIcon.isClickable = true
             }
         }
     }

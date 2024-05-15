@@ -7,11 +7,13 @@ import com.wb.verbum.model.User
 import com.wb.verbum.service.FirebaseService
 import com.wb.verbum.service.GameService
 import com.wb.verbum.service.UserService
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@OptIn(DelicateCoroutinesApi::class)
 suspend fun syncUserDataFromFirebaseToLocal(
     userService: UserService,
     gameService: GameService,
