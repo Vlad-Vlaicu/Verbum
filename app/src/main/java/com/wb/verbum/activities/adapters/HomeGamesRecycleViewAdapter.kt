@@ -1,5 +1,6 @@
 package com.wb.verbum.activities.adapters
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +19,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class HomeGamesRecycleViewAdapter(
-    private val gamesList: List<Game>,
+    private var gamesList: List<Game>,
     private val user: User,
     private val storageService: StorageService,
     private val userService: UserService,
@@ -152,5 +153,11 @@ class HomeGamesRecycleViewAdapter(
     override fun getItemCount(): Int {
         Log.d("COUNTER", "I counted " + gamesList.size)
         return gamesList.size
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateItems(newGames: List<Game>) {
+        gamesList = newGames
+        notifyDataSetChanged()  // Notify the adapter that the data set has changed
     }
 }

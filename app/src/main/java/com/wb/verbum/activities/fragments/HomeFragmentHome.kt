@@ -26,6 +26,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class HomeFragmentHome : Fragment() {
+
+    private lateinit var adapter: HomeGamesRecycleViewAdapter
+
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,7 +66,7 @@ class HomeFragmentHome : Fragment() {
                 }
 
             }
-            val adapter = HomeGamesRecycleViewAdapter(
+            adapter = HomeGamesRecycleViewAdapter(
                 eligibleGames,
                 user,
                 storageService,
@@ -107,13 +110,7 @@ class HomeFragmentHome : Fragment() {
                             }
 
                         }
-                        val adapter = HomeGamesRecycleViewAdapter(
-                            eligibleGames,
-                            user,
-                            storageService,
-                            userService
-                        )
-                        recyclerView.adapter = adapter
+                        adapter.updateItems(eligibleGames)
                         view?.requestLayout()
                     }
                 } else if (fragment is HomeAge35Fragment) {
@@ -136,13 +133,7 @@ class HomeFragmentHome : Fragment() {
                             }
 
                         }
-                        val adapter = HomeGamesRecycleViewAdapter(
-                            eligibleGames,
-                            user,
-                            storageService,
-                            userService
-                        )
-                        recyclerView.adapter = adapter
+                        adapter.updateItems(eligibleGames)
                         view?.requestLayout()
                     }
                 } else {
@@ -162,15 +153,8 @@ class HomeFragmentHome : Fragment() {
                                     ) {
                                 eligibleGames.add(game)
                             }
-
                         }
-                        val adapter = HomeGamesRecycleViewAdapter(
-                            eligibleGames,
-                            user,
-                            storageService,
-                            userService
-                        )
-                        recyclerView.adapter = adapter
+                        adapter.updateItems(eligibleGames)
                         view?.requestLayout()
                     }
                 }
