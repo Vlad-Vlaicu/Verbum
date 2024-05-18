@@ -11,7 +11,7 @@
         android:id="@+id/my_card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/white"
+        app:cardBackgroundColor="@color/lightest_gray"
         app:cardCornerRadius="16dp"
         app:cardElevation="4dp"
         android:layout_margin="4dp"
@@ -22,21 +22,21 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/game_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="24dp"
                 android:layout_marginTop="-24dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="24dp"
                 android:ellipsize="none"
                 android:gravity="center"
                 android:maxLines="2"
                 android:text="Corpul uman"
-                android:textSize="20sp"
+                android:textColor="@color/space_cadet"
+                android:textSize="16sp"
                 app:layout_constraintEnd_toStartOf="@+id/favourite_icon"
                 app:layout_constraintStart_toEndOf="@+id/tag"
                 app:layout_constraintTop_toBottomOf="@+id/favourite_icon" />
@@ -52,6 +52,7 @@
                 android:paddingBottom="16dp"
                 android:text="Potriveste partile corpului  dasd  da s dasdd adas dasda dasdas dasdas das d das dasd a d daas asdasdasdasdasdasdasd dasdasdas"
                 android:textSize="14sp"
+                android:textColor="@color/space_cadet"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -61,9 +62,10 @@
                 android:id="@+id/tag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:paddingStart="5dp"
+                android:textColor="@color/space_cadet"
                 android:text="3-5 ani"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

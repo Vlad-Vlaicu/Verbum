@@ -15,4 +15,6 @@
     <color name="blue">#459de4</color>
     <color name="red">#FF0000</color>
     <color name="light_gray">#dadada</color>
+    <color name="dark_blue">#192448</color>
+    <color name="lightest_gray">#F5F5F5</color>
 </resources>

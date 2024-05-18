@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Verbum</string>
+    <string name="cauta_joc">Cauta joc...</string>
+    <string name="connect_with_google">Connect With Google</string>
 </resources>

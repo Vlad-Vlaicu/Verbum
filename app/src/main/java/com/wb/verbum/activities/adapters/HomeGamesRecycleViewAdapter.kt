@@ -70,6 +70,12 @@ class HomeGamesRecycleViewAdapter(
             }
         }
 
+        if (!user.downloadedGames?.contains(gamesList[position].uuid)!!) {
+            holder.downloadDeleteIcon.setImageResource(R.drawable.download_icon)
+            holder.downloadDeleteIcon.setTag(IS_GAME_PLAYABLE, false)
+        }
+
+
         holder.favouriteIcon.setOnClickListener {
             if (user.favGames?.contains(gamesList[position].uuid) == true) {
                 holder.favouriteIcon.setImageResource(R.drawable.heart_empty_icon)
@@ -107,6 +113,7 @@ class HomeGamesRecycleViewAdapter(
 
                 holder.downloadDeleteIcon.setTag(IS_GAME_PLAYABLE, false)
                 holder.downloadDeleteIcon.setImageResource(R.drawable.download_icon)
+
             } else { //download resources
                 val resToBeDownloaded = arrayListOf<String>()
                 holder.downloadDeleteIcon.isClickable = false
@@ -131,10 +138,10 @@ class HomeGamesRecycleViewAdapter(
                     }
 
                 } else {
-
                     user.downloadedGames?.add(gamesList[position].uuid)
                     holder.downloadDeleteIcon.setTag(IS_GAME_PLAYABLE, true)
                     holder.downloadDeleteIcon.setImageResource(R.drawable.delete_icon)
+                    userService.update(user)
                 }
 
                 holder.downloadDeleteIcon.isClickable = true
