@@ -2,6 +2,7 @@ package com.wb.verbum.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import com.wb.verbum.R
 import com.wb.verbum.activities.fragments.HomeFragmentHome
@@ -16,6 +17,8 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = HomeLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         binding.homeButton.setOnClickListener{
             binding.homeButton.setTextColor(resources.getColor(R.color.magenta_haze))

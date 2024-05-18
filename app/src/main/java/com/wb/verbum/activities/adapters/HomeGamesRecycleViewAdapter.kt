@@ -20,7 +20,6 @@ import kotlinx.coroutines.launch
 class HomeGamesRecycleViewAdapter(
     private val gamesList: List<Game>,
     private val user: User,
-    private val category: String,
     private val storageService: StorageService,
     private val userService: UserService,
 ) :
@@ -47,7 +46,7 @@ class HomeGamesRecycleViewAdapter(
 
         holder.gameTitle.text = gamesList[position].name
         holder.description.text = gamesList[position].description
-        holder.tag.text = category
+        holder.tag.text = gamesList[position].tags?.get(0)?.displayName ?: ""
 
         if (user.favGames?.contains(gamesList[position].uuid) == true) {
             holder.favouriteIcon.setImageResource(R.drawable.heart_full_icon)
@@ -119,16 +118,25 @@ class HomeGamesRecycleViewAdapter(
                     }
                 }
 
-                GlobalScope.launch {
-                    downloadResources(
-                        resToBeDownloaded,
-                        holder,
-                        storageService,
-                        user,
-                        userService,
-                        gamesList[position].uuid
-                    )
+                if (resToBeDownloaded.size != 0){
+                    GlobalScope.launch {
+                        downloadResources(
+                            resToBeDownloaded,
+                            holder,
+                            storageService,
+                            user,
+                            userService,
+                            gamesList[position].uuid
+                        )
+                    }
+
+                } else {
+
+                    user.downloadedGames?.add(gamesList[position].uuid)
+                    holder.downloadDeleteIcon.setTag(IS_GAME_PLAYABLE, true)
+                    holder.downloadDeleteIcon.setImageResource(R.drawable.delete_icon)
                 }
+
                 holder.downloadDeleteIcon.isClickable = true
             }
         }

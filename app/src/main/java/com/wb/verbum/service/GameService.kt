@@ -16,11 +16,11 @@ class GameService(private val gameDao: GameDao) {
 
         withContext(Dispatchers.IO) {
             // Insert each game in gamesToBeInserted
+            deleteGames()
             games.forEach { game ->
                 insertGame(game)
             }
         }
-
     }
 
     fun insertGame(game: Game) {

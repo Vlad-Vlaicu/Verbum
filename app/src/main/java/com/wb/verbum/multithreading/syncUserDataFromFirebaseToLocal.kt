@@ -70,16 +70,12 @@ suspend fun syncUserDataFromFirebaseToLocal(
             }
 
             val task = firebaseService.getGamesData()
-            val dbGames = gameService.getAllGames();
+
 
             task.addOnSuccessListener { gameList ->
                 // Handle success: gameList contains the list of games retrieved from Firestore
                 for (game in gameList) {
-                    if (game in dbGames) {
-                        continue
-                    } else {
-                        gamesToBeInserted.add(game)
-                    }
+                    gamesToBeInserted.add(game)
                 }
 
                 GlobalScope.launch(Dispatchers.IO) {

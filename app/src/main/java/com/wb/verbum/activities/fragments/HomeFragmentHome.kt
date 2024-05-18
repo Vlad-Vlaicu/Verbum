@@ -9,11 +9,13 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
+import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.wb.verbum.R
 import com.wb.verbum.activities.adapters.HomeGamesRecycleViewAdapter
 import com.wb.verbum.activities.adapters.HomePagerAdapter
 import com.wb.verbum.db.AppDatabase
 import com.wb.verbum.model.ExerciseTag
+import com.wb.verbum.model.Game
 import com.wb.verbum.service.GameService
 import com.wb.verbum.service.StorageService
 import com.wb.verbum.service.UserService
@@ -44,29 +46,141 @@ class HomeFragmentHome : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireActivity())
 
         GlobalScope.launch(Dispatchers.Main) {
-            Log.d("ADAPTER", "Loading games")
             val games = withContext(Dispatchers.IO) {
                 gameService.getAllGames()
             }
-            Log.d("ADAPTER", "Finished loading games " + games.size)
-            Log.d("ADAPTER", "Loading user")
             val user = withContext(Dispatchers.IO) {
                 userService.getAllUsers()[0]
             }
-            Log.d("ADAPTER", "Finished loading user " + user.name)
-            Log.d("ADAPTER", "Creating adapter")
+
+            val eligibleGames = arrayListOf<Game>()
+
+            for (game in games){
+                if (game.tags?.contains(ExerciseTag.AGE1) == true
+                    && user.downloadedGames?.contains(game.uuid) == true
+                        ) {
+                    eligibleGames.add(game)
+                }
+
+            }
             val adapter = HomeGamesRecycleViewAdapter(
-                games,
+                eligibleGames,
                 user,
-                ExerciseTag.AGE1.displayName,
                 storageService,
                 userService
             )
-            Log.d("ADAPTER", "Finished creating adapter")
             recyclerView.adapter = adapter
-            Log.d("ADAPTER", "Finished setting adapter")
             view?.requestLayout()
         }
+
+        viewPager.addOnPageChangeListener(object : OnPageChangeListener {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+
+            }
+
+            override fun onPageSelected(position: Int) {
+                // This method will be invoked when a new page becomes selected
+                val fragment: Fragment = pagerAdapter.getItem(position)
+                // Do something with the current fragment
+
+                if (fragment is HomeAge23Fragment) {
+                    // Do something specific to FragmentOne
+                    GlobalScope.launch(Dispatchers.Main) {
+                        val games = withContext(Dispatchers.IO) {
+                            gameService.getAllGames()
+                        }
+                        val user = withContext(Dispatchers.IO) {
+                            userService.getAllUsers()[0]
+                        }
+
+                        val eligibleGames = arrayListOf<Game>()
+
+                        for (game in games){
+                            if (game.tags?.contains(ExerciseTag.AGE1) == true
+                                && user.downloadedGames?.contains(game.uuid) == true
+                                    ) {
+                                eligibleGames.add(game)
+                            }
+
+                        }
+                        val adapter = HomeGamesRecycleViewAdapter(
+                            eligibleGames,
+                            user,
+                            storageService,
+                            userService
+                        )
+                        recyclerView.adapter = adapter
+                        view?.requestLayout()
+                    }
+                } else if (fragment is HomeAge35Fragment) {
+                    // Do something specific to FragmentTwo
+                    GlobalScope.launch(Dispatchers.Main) {
+                        val games = withContext(Dispatchers.IO) {
+                            gameService.getAllGames()
+                        }
+                        val user = withContext(Dispatchers.IO) {
+                            userService.getAllUsers()[0]
+                        }
+
+                        val eligibleGames = arrayListOf<Game>()
+
+                        for (game in games){
+                            if (game.tags?.contains(ExerciseTag.AGE2) == true
+                                && user.downloadedGames?.contains(game.uuid) == true
+                                    ) {
+                                eligibleGames.add(game)
+                            }
+
+                        }
+                        val adapter = HomeGamesRecycleViewAdapter(
+                            eligibleGames,
+                            user,
+                            storageService,
+                            userService
+                        )
+                        recyclerView.adapter = adapter
+                        view?.requestLayout()
+                    }
+                } else {
+                    GlobalScope.launch(Dispatchers.Main) {
+                        val games = withContext(Dispatchers.IO) {
+                            gameService.getAllGames()
+                        }
+                        val user = withContext(Dispatchers.IO) {
+                            userService.getAllUsers()[0]
+                        }
+
+                        val eligibleGames = arrayListOf<Game>()
+
+                        for (game in games){
+                            if (game.tags?.contains(ExerciseTag.AGE3) == true
+                                && user.downloadedGames?.contains(game.uuid) == true
+                                    ) {
+                                eligibleGames.add(game)
+                            }
+
+                        }
+                        val adapter = HomeGamesRecycleViewAdapter(
+                            eligibleGames,
+                            user,
+                            storageService,
+                            userService
+                        )
+                        recyclerView.adapter = adapter
+                        view?.requestLayout()
+                    }
+                }
+
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+                // This method will be invoked when the scroll state changes
+            }
+        })
 
         return view
     }
