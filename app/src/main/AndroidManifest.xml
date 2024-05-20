@@ -16,9 +16,14 @@
         android:theme="@style/Theme.Verbum"
         tools:targetApi="31">
         <activity
+            android:name=".activities.PlayGame"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
             android:name=".activities.LoginActivity"
             android:exported="true"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.Verbum">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,7 +35,7 @@
             android:name=".activities.HomeActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Verbum"/>
+            android:theme="@style/Theme.Verbum" />
     </application>
 
 </manifest>

@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.wb.verbum.R
+import com.wb.verbum.listeners.OnGameItemClickListener
 import com.wb.verbum.model.Game
 import com.wb.verbum.model.User
 import com.wb.verbum.multithreading.downloadResources
@@ -20,9 +21,10 @@ import kotlinx.coroutines.launch
 
 class HomeGamesRecycleViewAdapter(
     private var gamesList: List<Game>,
-    private val user: User,
+    private var user: User,
     private val storageService: StorageService,
     private val userService: UserService,
+    private val listener: OnGameItemClickListener
 ) :
 
     RecyclerView.Adapter<HomeGamesRecycleViewAdapter.MyViewHolder>() {
@@ -148,6 +150,10 @@ class HomeGamesRecycleViewAdapter(
                 holder.downloadDeleteIcon.isClickable = true
             }
         }
+
+        holder.itemView.setOnClickListener {
+            listener.onItemClick(gamesList[position].uuid)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -156,8 +162,12 @@ class HomeGamesRecycleViewAdapter(
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateItems(newGames: List<Game>) {
+    fun updateItems(newGames: List<Game>, newUser: User) {
         gamesList = newGames
-        notifyDataSetChanged()  // Notify the adapter that the data set has changed
+        user = newUser
+    }
+
+    fun notifyDataChanged(){
+        notifyDataSetChanged()
     }
 }

@@ -1,5 +1,6 @@
 package com.wb.verbum.activities.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,17 +10,17 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.api.ResourceDescriptor.History
 import com.wb.verbum.R
+import com.wb.verbum.activities.PlayGame
 import com.wb.verbum.activities.adapters.HomeGamesRecycleViewAdapter
 import com.wb.verbum.db.AppDatabase
-import com.wb.verbum.model.ExerciseInfo
-import com.wb.verbum.model.ExerciseTag
+import com.wb.verbum.listeners.OnGameItemClickListener
 import com.wb.verbum.model.Game
 import com.wb.verbum.model.User
 import com.wb.verbum.service.GameService
 import com.wb.verbum.service.StorageService
 import com.wb.verbum.service.UserService
+import com.wb.verbum.utils.Constants
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -28,20 +29,24 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class HomeFragmentPlay : Fragment() {
+class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
 
     private lateinit var adapter: HomeGamesRecycleViewAdapter
     private lateinit var user: User
+    private lateinit var view: View
+    private lateinit var eligibleGames: List<Game>
+    private lateinit var allGames: List<Game>
+    private lateinit var userService: UserService
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.home_play_layout, container, false)
+        view = inflater.inflate(R.layout.home_play_layout, container, false)
 
-        val userService = UserService(AppDatabase.getDatabase(view.context).userDao())
+        userService = UserService(AppDatabase.getDatabase(view.context).userDao())
         val gameService = GameService(AppDatabase.getDatabase(view.context).gameDao())
         val storageService = StorageService(view.context)
 
@@ -49,21 +54,23 @@ class HomeFragmentPlay : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireActivity())
 
         GlobalScope.launch(Dispatchers.Main) {
-            val games = withContext(Dispatchers.IO) {
+            allGames = withContext(Dispatchers.IO) {
                 gameService.getAllGames()
             }
+            eligibleGames = allGames
             user = withContext(Dispatchers.IO) {
                 userService.getAllUsers()[0]
             }
 
             adapter = HomeGamesRecycleViewAdapter(
-                games,
+                allGames,
                 user,
                 storageService,
-                userService
+                userService,
+                this@HomeFragmentPlay
             )
             recyclerView.adapter = adapter
-            view?.requestLayout()
+            view.requestLayout()
         }
 
         val sortByFavs = view.findViewById<ImageView>(R.id.sortByFavs)
@@ -89,15 +96,13 @@ class HomeFragmentPlay : Fragment() {
                 sortByFavs.setBackgroundColor(newColor)
             }
             GlobalScope.launch(Dispatchers.Main) {
-                val games = withContext(Dispatchers.IO) {
-                    gameService.getAllGames()
-                }
-                val eligibleGames = sortGames(games, sortByFavs.getTag(IS_FAVS_SORTED) as Boolean,
+                 eligibleGames = sortGames(allGames, sortByFavs.getTag(IS_FAVS_SORTED) as Boolean,
                     sortAlphabetic.getTag(IS_ALPHA_SORTED) as Boolean,
                     sortRecent.getTag(IS_RECENT_SORTED) as Boolean,
-                    user)
-                adapter.updateItems(eligibleGames)
-                view?.requestLayout()
+                    user
+                )
+                adapter.updateItems(eligibleGames, user)
+                view.requestLayout()
             }
         }
 
@@ -113,15 +118,14 @@ class HomeFragmentPlay : Fragment() {
             }
 
             GlobalScope.launch(Dispatchers.Main) {
-                val games = withContext(Dispatchers.IO) {
-                    gameService.getAllGames()
-                }
-                val eligibleGames = sortGames(games, sortByFavs.getTag(IS_FAVS_SORTED) as Boolean,
+                 eligibleGames = sortGames(
+                    allGames, sortByFavs.getTag(IS_FAVS_SORTED) as Boolean,
                     sortAlphabetic.getTag(IS_ALPHA_SORTED) as Boolean,
                     sortRecent.getTag(IS_RECENT_SORTED) as Boolean,
-                    user)
-                adapter.updateItems(eligibleGames)
-                view?.requestLayout()
+                    user
+                )
+                adapter.updateItems(eligibleGames, user)
+                view.requestLayout()
             }
         }
 
@@ -136,15 +140,14 @@ class HomeFragmentPlay : Fragment() {
                 sortRecent.setBackgroundColor(newColor)
             }
             GlobalScope.launch(Dispatchers.Main) {
-                val games = withContext(Dispatchers.IO) {
-                    gameService.getAllGames()
-                }
-                val eligibleGames = sortGames(games, sortByFavs.getTag(IS_FAVS_SORTED) as Boolean,
+                eligibleGames = sortGames(
+                    allGames, sortByFavs.getTag(IS_FAVS_SORTED) as Boolean,
                     sortAlphabetic.getTag(IS_ALPHA_SORTED) as Boolean,
                     sortRecent.getTag(IS_RECENT_SORTED) as Boolean,
-                    user)
-                adapter.updateItems(eligibleGames)
-                view?.requestLayout()
+                    user
+                )
+                adapter.updateItems(eligibleGames, user)
+                view.requestLayout()
             }
         }
 
@@ -186,5 +189,24 @@ class HomeFragmentPlay : Fragment() {
         }
 
         return resultList
+    }
+
+    override fun onItemClick(gameUUID: String) {
+        val intent: Intent = Intent(view.context, PlayGame::class.java)
+        intent.putExtra(Constants.INTENT_GAME_TYPE, gameUUID)
+        startActivity(intent)
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun onResume() {
+        super.onResume()
+        if (::adapter.isInitialized){
+            GlobalScope.launch(Dispatchers.IO) {
+                val user = userService.getAllUsers()[0]
+                adapter.updateItems(eligibleGames, user)
+                view.requestLayout()
+            }
+            adapter.notifyDataChanged()
+        }
     }
 }

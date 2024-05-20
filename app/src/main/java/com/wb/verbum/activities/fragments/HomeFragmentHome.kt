@@ -1,7 +1,7 @@
 package com.wb.verbum.activities.fragments
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,37 +11,43 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.wb.verbum.R
+import com.wb.verbum.activities.PlayGame
 import com.wb.verbum.activities.adapters.HomeGamesRecycleViewAdapter
 import com.wb.verbum.activities.adapters.HomePagerAdapter
 import com.wb.verbum.db.AppDatabase
+import com.wb.verbum.listeners.OnGameItemClickListener
 import com.wb.verbum.model.ExerciseTag
 import com.wb.verbum.model.Game
 import com.wb.verbum.service.GameService
 import com.wb.verbum.service.StorageService
 import com.wb.verbum.service.UserService
+import com.wb.verbum.utils.Constants.INTENT_GAME_TYPE
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class HomeFragmentHome : Fragment() {
+class HomeFragmentHome : Fragment(), OnGameItemClickListener {
 
     private lateinit var adapter: HomeGamesRecycleViewAdapter
+    private lateinit var view: View
+    private lateinit var userService: UserService
+    private lateinit var eligibleGames: MutableList<Game>
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        var view = inflater.inflate(R.layout.home_home_layout, container, false)
+        view = inflater.inflate(R.layout.home_home_layout, container, false)
 
         val viewPager = view.findViewById<ViewPager>(R.id.homeFragmentPager)
         val pagerAdapter = HomePagerAdapter(childFragmentManager)
         viewPager.adapter = pagerAdapter
 
-        val userService = UserService(AppDatabase.getDatabase(view.context).userDao())
+        userService = UserService(AppDatabase.getDatabase(view.context).userDao())
         val gameService = GameService(AppDatabase.getDatabase(view.context).gameDao())
         val storageService = StorageService(view.context)
 
@@ -56,12 +62,12 @@ class HomeFragmentHome : Fragment() {
                 userService.getAllUsers()[0]
             }
 
-            val eligibleGames = arrayListOf<Game>()
+            eligibleGames = arrayListOf<Game>()
 
-            for (game in games){
+            for (game in games) {
                 if (game.tags?.contains(ExerciseTag.AGE1) == true
                     && user.downloadedGames?.contains(game.uuid) == true
-                        ) {
+                ) {
                     eligibleGames.add(game)
                 }
 
@@ -70,10 +76,11 @@ class HomeFragmentHome : Fragment() {
                 eligibleGames,
                 user,
                 storageService,
-                userService
+                userService,
+                this@HomeFragmentHome
             )
             recyclerView.adapter = adapter
-            view?.requestLayout()
+            view.requestLayout()
         }
 
         viewPager.addOnPageChangeListener(object : OnPageChangeListener {
@@ -102,16 +109,16 @@ class HomeFragmentHome : Fragment() {
 
                         val eligibleGames = arrayListOf<Game>()
 
-                        for (game in games){
+                        for (game in games) {
                             if (game.tags?.contains(ExerciseTag.AGE1) == true
                                 && user.downloadedGames?.contains(game.uuid) == true
-                                    ) {
+                            ) {
                                 eligibleGames.add(game)
                             }
 
                         }
-                        adapter.updateItems(eligibleGames)
-                        view?.requestLayout()
+                        adapter.updateItems(eligibleGames, user)
+                        view.requestLayout()
                     }
                 } else if (fragment is HomeAge35Fragment) {
                     // Do something specific to FragmentTwo
@@ -125,16 +132,16 @@ class HomeFragmentHome : Fragment() {
 
                         val eligibleGames = arrayListOf<Game>()
 
-                        for (game in games){
+                        for (game in games) {
                             if (game.tags?.contains(ExerciseTag.AGE2) == true
                                 && user.downloadedGames?.contains(game.uuid) == true
-                                    ) {
+                            ) {
                                 eligibleGames.add(game)
                             }
 
                         }
-                        adapter.updateItems(eligibleGames)
-                        view?.requestLayout()
+                        adapter.updateItems(eligibleGames, user)
+                        view.requestLayout()
                     }
                 } else {
                     GlobalScope.launch(Dispatchers.Main) {
@@ -147,15 +154,15 @@ class HomeFragmentHome : Fragment() {
 
                         val eligibleGames = arrayListOf<Game>()
 
-                        for (game in games){
+                        for (game in games) {
                             if (game.tags?.contains(ExerciseTag.AGE3) == true
                                 && user.downloadedGames?.contains(game.uuid) == true
-                                    ) {
+                            ) {
                                 eligibleGames.add(game)
                             }
                         }
-                        adapter.updateItems(eligibleGames)
-                        view?.requestLayout()
+                        adapter.updateItems(eligibleGames, user)
+                        view.requestLayout()
                     }
                 }
 
@@ -167,5 +174,24 @@ class HomeFragmentHome : Fragment() {
         })
 
         return view
+    }
+
+    override fun onItemClick(gameUUID: String) {
+        val intent: Intent = Intent(view.context, PlayGame::class.java)
+        intent.putExtra(INTENT_GAME_TYPE, gameUUID)
+        startActivity(intent)
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun onResume() {
+        super.onResume()
+        if (::adapter.isInitialized){
+            GlobalScope.launch(Dispatchers.IO) {
+                val user = userService.getAllUsers()[0]
+                adapter.updateItems(eligibleGames, user)
+                view.requestLayout()
+            }
+            adapter.notifyDataChanged()
+        }
     }
 }
