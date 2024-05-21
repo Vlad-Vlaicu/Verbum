@@ -118,6 +118,7 @@ class HomeFragmentHome : Fragment(), OnGameItemClickListener {
 
                         }
                         adapter.updateItems(eligibleGames, user)
+                        adapter.notifyDataChanged()
                         view.requestLayout()
                     }
                 } else if (fragment is HomeAge35Fragment) {
@@ -141,6 +142,7 @@ class HomeFragmentHome : Fragment(), OnGameItemClickListener {
 
                         }
                         adapter.updateItems(eligibleGames, user)
+                        adapter.notifyDataChanged()
                         view.requestLayout()
                     }
                 } else {
@@ -162,6 +164,7 @@ class HomeFragmentHome : Fragment(), OnGameItemClickListener {
                             }
                         }
                         adapter.updateItems(eligibleGames, user)
+                        adapter.notifyDataChanged()
                         view.requestLayout()
                     }
                 }
