@@ -7,8 +7,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.wb.verbum.R
@@ -41,7 +44,8 @@ class Exercise1 : Fragment() {
     private lateinit var newExercise: ExerciseInfo
     private var currentTrackIndex = 0
     private val NO_ROUNDS = 5;
-    private var viewCreationDone: Boolean = false
+    private lateinit var playButton: ImageView
+    private lateinit var pulseAnimation: Animation
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,6 +70,8 @@ class Exercise1 : Fragment() {
         imagesHolders.add(image3)
         imagesHolders.add(image4)
 
+        pulseAnimation = AnimationUtils.loadAnimation(view.context, R.anim.pulse)
+
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
 
@@ -86,7 +92,7 @@ class Exercise1 : Fragment() {
 
                 startGame()
 
-                val playButton: Button = view.findViewById(R.id.playButton)
+                playButton = view.findViewById(R.id.playButton)
                 playButton.setOnClickListener {
                     // Reset and replay the media file from the beginning
                     if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
@@ -95,6 +101,7 @@ class Exercise1 : Fragment() {
                         initializeMediaPlayer(mp3FilePaths[currentTrackIndex]);
                     }
                     mediaPlayer.start()
+                    playButton.startAnimation(pulseAnimation)
                 }
 
                 Log.d("AICI", "AICI SONG")
@@ -104,6 +111,7 @@ class Exercise1 : Fragment() {
         Log.d("AICI", "AICI FIN")
 
         sleep(200)
+        playButton.startAnimation(pulseAnimation)
         return view
     }
 
@@ -193,6 +201,9 @@ class Exercise1 : Fragment() {
             // Handle the case where the file does not exist
             // For example, show a toast message or log an error
             // Toast.makeText(this, "MP3 file not found", Toast.LENGTH_SHORT).show()
+        }
+        mediaPlayer.setOnCompletionListener {
+            playButton.clearAnimation() // Stop animation when playback finishes
         }
     }
 
