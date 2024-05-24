@@ -68,12 +68,14 @@ class LoginActivity: ComponentActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted
             // Request the permission
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE),
                 WRITE_EXTERNAL_STORAGE_REQUEST_CODE
             )
         } else {

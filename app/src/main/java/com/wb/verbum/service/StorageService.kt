@@ -37,6 +37,20 @@ class StorageService(private val context: Context) {
         }
     }
 
+    fun retrieveFile(fileName: String): File? {
+        return try {
+            val file = File(context.filesDir, fileName)
+            if (file.exists()) {
+                file
+            } else {
+                null
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
+    }
+
     fun doesFileExistsInStorage(fileName: String): Boolean {
         val file = File(context.filesDir, fileName)
         return file.exists()

@@ -3,23 +3,14 @@ package com.wb.verbum.model
 import java.io.Serializable
 
 class ExerciseInfo : Serializable {
+
     var name: String? = null
-        private set
-
     var description: String? = null
-        private set
-
     var tags: MutableList<ExerciseTag>? = null
-        private set
-
     var startingTime: String? = null
-        private set
-
     var endingTime: String? = null
-        private set
-
-    var rounds: MutableList<ExerciseTag>? = null
-        private set
+    var rounds: MutableList<ExerciseRound>? = null
+    var status: GameStatus? = null
 
     constructor()
 
@@ -29,7 +20,8 @@ class ExerciseInfo : Serializable {
         tags: MutableList<ExerciseTag>?,
         startingTime: String?,
         endingTime: String?,
-        rounds: MutableList<ExerciseTag>?
+        rounds: MutableList<ExerciseRound>?,
+        status: GameStatus?
     ) {
         this.name = name
         this.description = description
@@ -37,5 +29,6 @@ class ExerciseInfo : Serializable {
         this.startingTime = startingTime
         this.endingTime = endingTime
         this.rounds = rounds
+        this.status = status
     }
 }

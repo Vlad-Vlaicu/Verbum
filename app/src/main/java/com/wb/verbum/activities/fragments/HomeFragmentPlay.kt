@@ -102,6 +102,7 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
                     user
                 )
                 adapter.updateItems(eligibleGames, user)
+                adapter.notifyDataChanged()
                 view.requestLayout()
             }
         }
@@ -125,6 +126,7 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
                     user
                 )
                 adapter.updateItems(eligibleGames, user)
+                adapter.notifyDataChanged()
                 view.requestLayout()
             }
         }
@@ -147,6 +149,7 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
                     user
                 )
                 adapter.updateItems(eligibleGames, user)
+                adapter.notifyDataChanged()
                 view.requestLayout()
             }
         }

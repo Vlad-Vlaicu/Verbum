@@ -129,12 +129,10 @@ class PlayStartPage(private val gameType: String?) : Fragment(){
             }
         }
 
-
-
         backButton.setOnClickListener{
             requireActivity().finish()
         }
 
-        return view;
+        return view
     }
 }
