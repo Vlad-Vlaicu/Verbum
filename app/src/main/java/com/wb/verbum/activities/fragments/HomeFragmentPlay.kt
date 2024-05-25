@@ -21,6 +21,7 @@ import com.wb.verbum.service.GameService
 import com.wb.verbum.service.StorageService
 import com.wb.verbum.service.UserService
 import com.wb.verbum.utils.Constants
+import com.wb.verbum.utils.Constants.INTENT_GAME_TYPE
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -196,7 +197,8 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
 
     override fun onItemClick(gameUUID: String) {
         val intent: Intent = Intent(view.context, PlayGame::class.java)
-        intent.putExtra(Constants.INTENT_GAME_TYPE, gameUUID)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        intent.putExtra(INTENT_GAME_TYPE, gameUUID)
         startActivity(intent)
     }
 

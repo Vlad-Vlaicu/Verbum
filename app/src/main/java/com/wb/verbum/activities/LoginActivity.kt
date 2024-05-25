@@ -145,8 +145,9 @@ class LoginActivity: ComponentActivity() {
                         syncUserDataFromFirebaseToLocal(userService, gameService, firebaseService, user)
                     }
                 }
-
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 startActivity(intent)
+                overridePendingTransition(R.anim.fade_in_anim, R.anim.fade_in_anim)
             }else{
                 Toast.makeText(this, it.exception.toString() , Toast.LENGTH_SHORT).show()
 

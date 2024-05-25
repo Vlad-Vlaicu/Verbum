@@ -1,6 +1,7 @@
 package com.wb.verbum.activities.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.wb.verbum.R
+import com.wb.verbum.activities.HomeActivity
 import com.wb.verbum.db.AppDatabase
 import com.wb.verbum.model.exercises.ExerciseFactory
 import com.wb.verbum.multithreading.downloadResources
@@ -130,7 +132,10 @@ class PlayStartPage(private val gameType: String?) : Fragment(){
         }
 
         backButton.setOnClickListener{
-            requireActivity().finish()
+            val intent: Intent = Intent(view?.context, HomeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            startActivity(intent)
+            activity?.overridePendingTransition(R.anim.fade_in_anim, R.anim.fade_in_anim)
         }
 
         return view

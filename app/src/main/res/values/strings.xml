@@ -2,4 +2,6 @@
     <string name="app_name">Verbum</string>
     <string name="cauta_joc">Cauta joc...</string>
     <string name="connect_with_google">Connect With Google</string>
+    <string name="SUCCESS_SOUND_FILE">res/meta_sounds/success.mp3</string>
+    <string name="FAIL_SOUND_FILE">res/meta_sounds/fail.mp3</string>
 </resources>

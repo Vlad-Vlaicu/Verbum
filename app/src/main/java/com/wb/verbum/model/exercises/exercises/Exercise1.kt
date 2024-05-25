@@ -1,20 +1,25 @@
 package com.wb.verbum.model.exercises.exercises
 
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.wb.verbum.R
+import com.wb.verbum.activities.HomeActivity
+import com.wb.verbum.activities.PlayGame
 import com.wb.verbum.db.AppDatabase
 import com.wb.verbum.model.ExerciseInfo
 import com.wb.verbum.model.Game
@@ -23,6 +28,7 @@ import com.wb.verbum.model.User
 import com.wb.verbum.service.GameService
 import com.wb.verbum.service.StorageService
 import com.wb.verbum.service.UserService
+import com.wb.verbum.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -41,11 +47,14 @@ class Exercise1 : Fragment() {
     private lateinit var gameService: GameService
     private lateinit var storageService: StorageService
     private var imagesHolders: MutableList<ImageView> = mutableListOf()
+    private var imagesHoldersFrames: MutableList<FrameLayout> = mutableListOf()
     private lateinit var newExercise: ExerciseInfo
     private var currentTrackIndex = 0
-    private val NO_ROUNDS = 5;
+    private val NO_ROUNDS = 1;
     private lateinit var playButton: ImageView
     private lateinit var pulseAnimation: Animation
+    private var HOLDER_TAG = R.id.playButton
+    private lateinit var backgroundView: ConstraintLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,11 +73,28 @@ class Exercise1 : Fragment() {
         val image2: ImageView = view.findViewById(R.id.imageView2)
         val image3: ImageView = view.findViewById(R.id.imageView3)
         val image4: ImageView = view.findViewById(R.id.imageView4)
+        val frame1: FrameLayout = view.findViewById(R.id.image1Frame)
+        val frame2: FrameLayout = view.findViewById(R.id.image2Frame)
+        val frame3: FrameLayout = view.findViewById(R.id.image3Frame)
+        val frame4: FrameLayout = view.findViewById(R.id.image4Frame)
+        backgroundView = view.findViewById(R.id.playBackground)
+        playButton = view.findViewById(R.id.playButton)
 
         imagesHolders.add(image1)
         imagesHolders.add(image2)
         imagesHolders.add(image3)
         imagesHolders.add(image4)
+
+        imagesHoldersFrames.add(frame1)
+        imagesHoldersFrames.add(frame2)
+        imagesHoldersFrames.add(frame3)
+        imagesHoldersFrames.add(frame4)
+
+        for (image in imagesHolders) {
+            image.setOnClickListener {
+                endRound(image)
+            }
+        }
 
         pulseAnimation = AnimationUtils.loadAnimation(view.context, R.anim.pulse)
 
@@ -79,6 +105,7 @@ class Exercise1 : Fragment() {
                 user = userService.getAllUsers()[0]
 
                 mp3FilePaths = mutableListOf()
+                newExercise = ExerciseInfo()
 
                 for (res in game.requiredResources!!) {
                     if (res.endsWith(".mp3", ignoreCase = true) && res.contains("animal_sounds")) {
@@ -91,8 +118,6 @@ class Exercise1 : Fragment() {
                 }
 
                 startGame()
-
-                playButton = view.findViewById(R.id.playButton)
                 playButton.setOnClickListener {
                     // Reset and replay the media file from the beginning
                     if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
@@ -133,17 +158,32 @@ class Exercise1 : Fragment() {
     }
 
     private fun startRound() {
-
         if (currentTrackIndex == NO_ROUNDS) {
             newExercise.endingTime = LocalDateTime.now().toString()
             newExercise.status = GameStatus.COMPLETED
-            //TODO: goTo summary game page
+            val intent: Intent = Intent(view?.context, HomeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            startActivity(intent)
+            activity?.overridePendingTransition(R.anim.fade_in_anim, R.anim.fade_in_anim)
+            //logFinishExercise()
             activity?.finish()
         }
 
+        for (frame in imagesHoldersFrames) {
+            frame.visibility = VISIBLE
+        }
+
+        backgroundView.setBackgroundColor(resources.getColor(R.color.white))
+        playButton.isClickable = true
+
         val animalSound = mp3FilePaths[currentTrackIndex]
         val animalName = extractAnimalName(animalSound)
-        val animalImage = storageService.retrieveFile(jpgFilePaths.filter { it.contains(animalName, ignoreCase = true) }
+        val animalImage = storageService.retrieveFile(jpgFilePaths.filter {
+            it.contains(
+                animalName,
+                ignoreCase = true
+            )
+        }
             .random())
 
         val otherImages = jpgFilePaths.filter { !it.contains(animalName, ignoreCase = true) }
@@ -156,7 +196,7 @@ class Exercise1 : Fragment() {
         val bitmap = BitmapFactory.decodeFile(animalImage?.absolutePath)
         imagesHolders[0].setImageBitmap(bitmap)
         Log.d("AICI", "AICI main IM")
-        //imagesHolders[0].setBackgroundColor(R.drawable.image_border_success)
+        imagesHolders[0].setTag(HOLDER_TAG, true)
 
         for (i in 1 until imagesHolders.size) {
             // Check if the index is within the bounds of the imageList
@@ -164,10 +204,11 @@ class Exercise1 : Fragment() {
                 Log.d("AICI", "AICI other IM")
                 val otherImage = otherImages[i - 1]
                 val otherImageBitmap = BitmapFactory.decodeFile(otherImage?.absolutePath)
-                try{
+                try {
                     imagesHolders[i].setImageBitmap(otherImageBitmap)
+                    imagesHolders[i].setTag(HOLDER_TAG, false)
 
-                } catch (e: Exception){
+                } catch (e: Exception) {
                     e.message?.let { Log.d("AICI", it) }
                 }
             }
@@ -175,6 +216,43 @@ class Exercise1 : Fragment() {
 
         initializeMediaPlayer(animalSound)
         mediaPlayer.start()
+        playButton.startAnimation(pulseAnimation)
+
+        //logNewRound()
+    }
+
+    private fun endRound(response: ImageView) {
+        currentTrackIndex = currentTrackIndex + 1
+
+        for (image in imagesHoldersFrames) {
+            image.visibility = GONE
+        }
+
+        val frameLayout = response.parent as? FrameLayout
+        if (frameLayout != null) {
+            frameLayout.visibility = VISIBLE
+        }
+
+        playButton.clearAnimation()
+        playButton.isClickable = false
+
+        if (::mediaPlayer.isInitialized && mediaPlayer.isPlaying) {
+            mediaPlayer.stop()
+            mediaPlayer.reset()
+        }
+
+        if (response.getTag(HOLDER_TAG) as Boolean) {
+            backgroundView.setBackgroundColor(resources.getColor(R.color.green))
+            initializeMediaPlayer(getString(R.string.SUCCESS_SOUND_FILE))
+
+        } else {
+            backgroundView.setBackgroundColor(resources.getColor(R.color.red))
+            initializeMediaPlayer(getString(R.string.FAIL_SOUND_FILE))
+        }
+
+        mediaPlayer.start()
+
+        //logEndRound()
     }
 
     fun extractAnimalName(filePath: String): String {
@@ -182,7 +260,6 @@ class Exercise1 : Fragment() {
         val fileName = file.nameWithoutExtension
         return fileName.substringAfterLast("/")
     }
-
 
     fun initializeMediaPlayer(fileName: String) {
         if (::mediaPlayer.isInitialized) {
@@ -197,14 +274,26 @@ class Exercise1 : Fragment() {
                 prepare()
                 isLooping = false
             }
-        } else {
-            // Handle the case where the file does not exist
-            // For example, show a toast message or log an error
-            // Toast.makeText(this, "MP3 file not found", Toast.LENGTH_SHORT).show()
         }
+
         mediaPlayer.setOnCompletionListener {
             playButton.clearAnimation() // Stop animation when playback finishes
+            if (fileName.contains("meta_sounds")) {
+                startRound()
+            }
         }
+    }
+
+    private fun logEndRound() {
+
+    }
+
+    private fun logNewRound() {
+
+    }
+
+    private fun logFinishExercise() {
+
     }
 
     override fun onDestroy() {

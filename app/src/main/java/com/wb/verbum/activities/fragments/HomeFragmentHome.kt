@@ -181,6 +181,7 @@ class HomeFragmentHome : Fragment(), OnGameItemClickListener {
 
     override fun onItemClick(gameUUID: String) {
         val intent: Intent = Intent(view.context, PlayGame::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         intent.putExtra(INTENT_GAME_TYPE, gameUUID)
         startActivity(intent)
     }
