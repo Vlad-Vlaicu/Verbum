@@ -2,9 +2,12 @@ package com.wb.verbum.activities.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -40,6 +43,7 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
     private lateinit var allGames: List<Game>
     private lateinit var userService: UserService
     private lateinit var recyclerView: RecyclerView
+    private lateinit var searchBar: EditText
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreateView(
@@ -52,6 +56,8 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
         userService = UserService(AppDatabase.getDatabase(view.context).userDao())
         val gameService = GameService(AppDatabase.getDatabase(view.context).gameDao())
         val storageService = StorageService(view.context)
+
+        searchBar = view.findViewById(R.id.gamesSearchBar)
 
         recyclerView = view.findViewById(R.id.playRecycleView)
         recyclerView.layoutManager = LinearLayoutManager(requireActivity())
@@ -106,7 +112,13 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
                     sortRecent.getTag(IS_RECENT_SORTED) as Boolean,
                     user
                 )
-                adapter.updateItems(eligibleGames, user)
+
+                val query = searchBar.text.toString()
+                val words = query.split("\\s+".toRegex()) // Split the query into individual words
+                val filteredGames = filterGames(eligibleGames, words)
+                val sortedGames = sortGames(filteredGames, words)
+
+                adapter.updateItems(sortedGames, user)
                 adapter.notifyDataChanged()
                 adjustRecyclerViewHeight(recyclerView)
                 view.requestLayout()
@@ -131,7 +143,13 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
                     sortRecent.getTag(IS_RECENT_SORTED) as Boolean,
                     user
                 )
-                adapter.updateItems(eligibleGames, user)
+
+                val query = searchBar.text.toString()
+                val words = query.split("\\s+".toRegex()) // Split the query into individual words
+                val filteredGames = filterGames(eligibleGames, words)
+                val sortedGames = sortGames(filteredGames, words)
+
+                adapter.updateItems(sortedGames, user)
                 adapter.notifyDataChanged()
                 adjustRecyclerViewHeight(recyclerView)
                 view.requestLayout()
@@ -155,16 +173,47 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
                     sortRecent.getTag(IS_RECENT_SORTED) as Boolean,
                     user
                 )
-                adapter.updateItems(eligibleGames, user)
+
+                val query = searchBar.text.toString()
+                val words = query.split("\\s+".toRegex()) // Split the query into individual words
+                val filteredGames = filterGames(eligibleGames, words)
+                val sortedGames = sortGames(filteredGames, words)
+
+                adapter.updateItems(sortedGames, user)
                 adapter.notifyDataChanged()
                 adjustRecyclerViewHeight(recyclerView)
                 view.requestLayout()
             }
         }
+
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // No implementation needed
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Filter and sort the games list based on the entered text
+                val query = s.toString()
+                val words = query.split("\\s+".toRegex()) // Split the query into individual words
+                val filteredGames = filterGames(eligibleGames, words)
+                val sortedGames = sortGames(filteredGames, words)
+
+                // Update the adapter with the filtered and sorted list
+                adapter.updateItems(sortedGames, user)
+                adapter.notifyDataChanged()
+                adjustRecyclerViewHeight(recyclerView)
+                view.requestLayout()
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // No implementation needed
+            }
+        })
+
         return view
     }
 
-    fun sortGames(
+    private fun sortGames(
         inputList: List<Game>,
         isFavs: Boolean,
         isAlpha: Boolean,
@@ -237,6 +286,35 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
             val params = recyclerView.layoutParams
             params.height = totalHeight
             recyclerView.layoutParams = params
+        }
+    }
+
+    private fun filterGames(gamesList: List<Game>, words: List<String>): List<Game> {
+        return gamesList.filter { game ->
+            words.all { word ->
+                game.name?.contains(word, ignoreCase = true) == true  ||
+                        game.description?.contains(word, ignoreCase = true) == true  ||
+                        game.tags?.any { tag -> tag.displayName.contains(word, ignoreCase = true) } == true
+            }
+        }
+    }
+
+    private fun sortGames(gamesList: List<Game>, words: List<String>): List<Game> {
+        // Sort the games list based on relevance (you can implement your own logic here)
+        // For example, you can sort by the number of matches in title, description, and tags
+        return gamesList.sortedByDescending { game ->
+            var relevanceScore = 0
+            words.forEach { word ->
+                if (game.name?.contains(word, ignoreCase = true) == true) {
+                    relevanceScore += 3
+                }
+                if (game.description?.contains(word, ignoreCase = true) == true) {
+                    relevanceScore += 2
+                }
+                relevanceScore += game.tags?.count { tag -> tag.displayName.contains(word, ignoreCase = true) }
+                    ?: 0
+            }
+            relevanceScore
         }
     }
 }
