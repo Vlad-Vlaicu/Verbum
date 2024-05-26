@@ -205,8 +205,10 @@ class HomeFragmentHome : Fragment(), OnGameItemClickListener {
 
     fun adjustRecyclerViewHeight(recyclerView: RecyclerView) {
         val adapter = recyclerView.adapter ?: return
-        if (adapter.itemCount > 0) {
-            // Measure the height of a single item
+        val itemCount = adapter.itemCount
+        val params = recyclerView.layoutParams
+
+        if (itemCount > 0) {
             val holder = adapter.createViewHolder(recyclerView, adapter.getItemViewType(0))
             adapter.onBindViewHolder(holder, 0)
             holder.itemView.measure(
@@ -214,12 +216,12 @@ class HomeFragmentHome : Fragment(), OnGameItemClickListener {
                 View.MeasureSpec.UNSPECIFIED
             )
             val itemHeight = holder.itemView.measuredHeight
-            // Calculate the total height
             val totalHeight = itemHeight * adapter.itemCount
-            // Set the height of the RecyclerView
-            val params = recyclerView.layoutParams
             params.height = totalHeight
-            recyclerView.layoutParams = params
+        } else {
+            params.height = 0
         }
+
+        recyclerView.layoutParams = params
     }
 }
