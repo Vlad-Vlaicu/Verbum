@@ -5,45 +5,74 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/lineChart"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="16dp"
-        android:padding="4dp"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonDaily" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
-        android:id="@+id/buttonDaily"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_below="@id/lineChart"
-        app:layout_constraintEnd_toStartOf="@+id/buttonWeekly"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/day_icon" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/buttonMonthly"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_below="@id/lineChart"
-        android:layout_toEndOf="@id/buttonDaily"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/month_icon" />
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/lineChart"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="16dp"
+                android:padding="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/buttonDaily" />
 
-    <ImageView
-        android:id="@+id/buttonWeekly"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_below="@id/lineChart"
-        android:layout_toEndOf="@id/buttonWeekly"
-        app:layout_constraintEnd_toStartOf="@+id/buttonMonthly"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/week_icon" />
+            <ImageView
+                android:id="@+id/buttonDaily"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_below="@id/lineChart"
+                app:layout_constraintEnd_toStartOf="@+id/buttonWeekly"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/day_icon" />
+
+            <ImageView
+                android:id="@+id/buttonMonthly"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_below="@id/lineChart"
+                android:layout_toEndOf="@id/buttonDaily"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/month_icon" />
+
+            <ImageView
+                android:id="@+id/buttonWeekly"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_below="@id/lineChart"
+                android:layout_toEndOf="@id/buttonWeekly"
+                app:layout_constraintEnd_toStartOf="@+id/buttonMonthly"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/week_icon" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/statsRecycleView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lineChart" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

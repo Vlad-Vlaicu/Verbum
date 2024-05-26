@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.databinding.adapters.ViewBindingAdapter.setPadding
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
@@ -16,6 +18,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.wb.verbum.R
 import com.wb.verbum.activities.adapters.HomeGamesRecycleViewAdapter
+import com.wb.verbum.activities.adapters.HomeStatsRecycleViewAdapter
 import com.wb.verbum.db.AppDatabase
 import com.wb.verbum.formatters.DayAxisValueFormatter
 import com.wb.verbum.formatters.MonthAxisValueFormatter
@@ -79,6 +82,13 @@ class HomeFragmentStats : Fragment() {
             view.findViewById<ImageView>(R.id.buttonMonthly).setOnClickListener {
                 loadMonthlyData()
             }
+
+            val statRecycleView: RecyclerView = view.findViewById(R.id.statsRecycleView)
+            val adapter = HomeStatsRecycleViewAdapter(
+               user, userService, view.context
+            )
+            statRecycleView.adapter = adapter
+            statRecycleView.layoutManager = LinearLayoutManager(view.context)
         }
 
         return view
