@@ -166,6 +166,10 @@ class Exercise1 : Fragment() {
             frame.visibility = VISIBLE
         }
 
+        for (image in imagesHolders) {
+            image.isClickable = true
+        }
+
         backgroundView.setBackgroundColor(resources.getColor(R.color.white))
         playButton.isClickable = true
 
@@ -219,6 +223,10 @@ class Exercise1 : Fragment() {
 
         for (image in imagesHoldersFrames) {
             image.visibility = GONE
+        }
+
+        for (image in imagesHolders) {
+            image.isClickable = false
         }
 
         val frameLayout = response.parent as? FrameLayout
