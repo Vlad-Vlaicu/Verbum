@@ -19,16 +19,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.wb.verbum.R
 import com.wb.verbum.activities.HomeActivity
-import com.wb.verbum.activities.PlayGame
 import com.wb.verbum.db.AppDatabase
 import com.wb.verbum.model.ExerciseInfo
+import com.wb.verbum.model.ExerciseRound
 import com.wb.verbum.model.Game
 import com.wb.verbum.model.GameStatus
 import com.wb.verbum.model.User
 import com.wb.verbum.service.GameService
 import com.wb.verbum.service.StorageService
 import com.wb.verbum.service.UserService
-import com.wb.verbum.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -50,7 +49,7 @@ class Exercise1 : Fragment() {
     private var imagesHoldersFrames: MutableList<FrameLayout> = mutableListOf()
     private lateinit var newExercise: ExerciseInfo
     private var currentTrackIndex = 0
-    private val NO_ROUNDS = 1;
+    private val NO_ROUNDS = 5
     private lateinit var playButton: ImageView
     private lateinit var pulseAnimation: Animation
     private var HOLDER_TAG = R.id.playButton
@@ -66,8 +65,6 @@ class Exercise1 : Fragment() {
         userService = UserService(AppDatabase.getDatabase(view.context).userDao())
         gameService = GameService(AppDatabase.getDatabase(view.context).gameDao())
         storageService = StorageService(view.context)
-
-        Log.d("AICI", "AICI1")
 
         val image1: ImageView = view.findViewById(R.id.imageView1)
         val image2: ImageView = view.findViewById(R.id.imageView2)
@@ -100,7 +97,6 @@ class Exercise1 : Fragment() {
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-
                 game = gameService.getGameByUUID("firstDemo")!!
                 user = userService.getAllUsers()[0]
 
@@ -128,18 +124,13 @@ class Exercise1 : Fragment() {
                     mediaPlayer.start()
                     playButton.startAnimation(pulseAnimation)
                 }
-
-                Log.d("AICI", "AICI SONG")
             }
         }
-
-        Log.d("AICI", "AICI FIN")
 
         sleep(200)
         playButton.startAnimation(pulseAnimation)
         return view
     }
-
 
     private fun startGame() {
         mp3FilePaths.shuffle()
@@ -154,6 +145,8 @@ class Exercise1 : Fragment() {
         newExercise.status = GameStatus.IN_PROGRESS
         newExercise.startingTime = LocalDateTime.now().toString()
 
+        user.exerciseHistory?.add(newExercise)
+
         startRound()
     }
 
@@ -165,7 +158,7 @@ class Exercise1 : Fragment() {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(intent)
             activity?.overridePendingTransition(R.anim.fade_in_anim, R.anim.fade_in_anim)
-            //logFinishExercise()
+            logFinishExercise()
             activity?.finish()
         }
 
@@ -218,7 +211,7 @@ class Exercise1 : Fragment() {
         mediaPlayer.start()
         playButton.startAnimation(pulseAnimation)
 
-        //logNewRound()
+        logNewRound()
     }
 
     private fun endRound(response: ImageView) {
@@ -252,7 +245,7 @@ class Exercise1 : Fragment() {
 
         mediaPlayer.start()
 
-        //logEndRound()
+        logEndRound(response.getTag(HOLDER_TAG) as Boolean)
     }
 
     fun extractAnimalName(filePath: String): String {
@@ -284,16 +277,35 @@ class Exercise1 : Fragment() {
         }
     }
 
-    private fun logEndRound() {
+    private fun logFinishExercise() {
+        newExercise.endingTime = LocalDateTime.now().toString()
+        newExercise.status = GameStatus.COMPLETED
 
+        userService.update(user)
     }
 
     private fun logNewRound() {
+        val round = ExerciseRound()
+        round.startTime = LocalDateTime.now().toString()
+        round.isCompleted = false
+        round.isSuccess = false
+        newExercise.rounds?.add(round)
 
+        userService.update(user)
     }
 
-    private fun logFinishExercise() {
+    private fun logEndRound(isSuccessful: Boolean) {
+        val lastRound = newExercise.rounds?.last()
+        if (lastRound != null) {
+            lastRound.isSuccess = isSuccessful
+            lastRound.isCompleted = true
+            lastRound.endTime = LocalDateTime.now().toString()
 
+            val lastIndex = (newExercise.rounds?.size ?: 0) - 1
+            newExercise.rounds?.set(lastIndex, lastRound)
+
+            userService.update(user)
+        }
     }
 
     override fun onDestroy() {

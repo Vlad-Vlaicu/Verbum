@@ -4,19 +4,11 @@ import java.io.Serializable
 
 class ExerciseRound : Serializable {
     var name: String? = null
-        private set
-
     var startTime: String? = null
-        private set
-
     var endTime: String? = null
-        private set
-
     var retries: Int = 0
-        private set
-
     var isCompleted: Boolean = false
-        private set
+    var isSuccess: Boolean = false
 
     constructor()
 
@@ -25,12 +17,14 @@ class ExerciseRound : Serializable {
         startTime: String?,
         endTime: String?,
         retries: Int,
-        isCompleted: Boolean
+        isCompleted: Boolean,
+        isSuccess: Boolean,
     ) {
         this.name = name
         this.startTime = startTime
         this.endTime = endTime
         this.retries = retries
         this.isCompleted = isCompleted
+        this.isSuccess = isSuccess
     }
 }
