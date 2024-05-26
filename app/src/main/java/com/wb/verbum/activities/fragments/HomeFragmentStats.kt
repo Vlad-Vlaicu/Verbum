@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.databinding.adapters.ViewBindingAdapter.setPadding
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,14 +16,11 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.wb.verbum.R
-import com.wb.verbum.activities.adapters.HomeGamesRecycleViewAdapter
 import com.wb.verbum.activities.adapters.HomeStatsRecycleViewAdapter
 import com.wb.verbum.db.AppDatabase
 import com.wb.verbum.formatters.DayAxisValueFormatter
-import com.wb.verbum.formatters.MonthAxisValueFormatter
 import com.wb.verbum.formatters.WeekAxisValueFormatter
 import com.wb.verbum.model.ExerciseInfo
-import com.wb.verbum.model.Game
 import com.wb.verbum.model.User
 import com.wb.verbum.service.UserService
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -32,14 +28,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
+import java.lang.Thread.sleep
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
 import java.time.temporal.WeekFields
-import java.util.Calendar
 import java.util.Locale
-import java.util.Random
 
 class HomeFragmentStats : Fragment() {
 
@@ -85,12 +79,15 @@ class HomeFragmentStats : Fragment() {
 
             val statRecycleView: RecyclerView = view.findViewById(R.id.statsRecycleView)
             val adapter = HomeStatsRecycleViewAdapter(
-               user, userService, view.context
+                user, userService, view.context
             )
             statRecycleView.adapter = adapter
             statRecycleView.layoutManager = LinearLayoutManager(view.context)
+            adjustRecyclerViewHeight(statRecycleView)
+            view.requestLayout()
         }
 
+        sleep(100)
         return view
     }
 
@@ -279,5 +276,25 @@ class HomeFragmentStats : Fragment() {
         }
 
         return Pair(entries, labels)
+    }
+
+    fun adjustRecyclerViewHeight(recyclerView: RecyclerView) {
+        val adapter = recyclerView.adapter ?: return
+        if (adapter.itemCount > 0) {
+            // Measure the height of a single item
+            val holder = adapter.createViewHolder(recyclerView, adapter.getItemViewType(0))
+            adapter.onBindViewHolder(holder, 0)
+            holder.itemView.measure(
+                View.MeasureSpec.makeMeasureSpec(recyclerView.width, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.UNSPECIFIED
+            )
+            val itemHeight = holder.itemView.measuredHeight
+            // Calculate the total height
+            val totalHeight = itemHeight * adapter.itemCount
+            // Set the height of the RecyclerView
+            val params = recyclerView.layoutParams
+            params.height = totalHeight
+            recyclerView.layoutParams = params
+        }
     }
 }

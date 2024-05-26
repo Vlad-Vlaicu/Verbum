@@ -34,6 +34,7 @@ class HomeFragmentHome : Fragment(), OnGameItemClickListener {
     private lateinit var view: View
     private lateinit var userService: UserService
     private lateinit var eligibleGames: MutableList<Game>
+    private lateinit var recyclerView: RecyclerView
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreateView(
@@ -51,7 +52,7 @@ class HomeFragmentHome : Fragment(), OnGameItemClickListener {
         val gameService = GameService(AppDatabase.getDatabase(view.context).gameDao())
         val storageService = StorageService(view.context)
 
-        val recyclerView: RecyclerView = view.findViewById(R.id.homeRecycleView)
+        recyclerView = view.findViewById(R.id.homeRecycleView)
         recyclerView.layoutManager = LinearLayoutManager(requireActivity())
 
         GlobalScope.launch(Dispatchers.Main) {
@@ -80,6 +81,7 @@ class HomeFragmentHome : Fragment(), OnGameItemClickListener {
                 this@HomeFragmentHome
             )
             recyclerView.adapter = adapter
+            adjustRecyclerViewHeight(recyclerView)
             view.requestLayout()
         }
 
@@ -119,6 +121,7 @@ class HomeFragmentHome : Fragment(), OnGameItemClickListener {
                         }
                         adapter.updateItems(eligibleGames, user)
                         adapter.notifyDataChanged()
+                        adjustRecyclerViewHeight(recyclerView)
                         view.requestLayout()
                     }
                 } else if (fragment is HomeAge35Fragment) {
@@ -143,6 +146,7 @@ class HomeFragmentHome : Fragment(), OnGameItemClickListener {
                         }
                         adapter.updateItems(eligibleGames, user)
                         adapter.notifyDataChanged()
+                        adjustRecyclerViewHeight(recyclerView)
                         view.requestLayout()
                     }
                 } else {
@@ -165,6 +169,7 @@ class HomeFragmentHome : Fragment(), OnGameItemClickListener {
                         }
                         adapter.updateItems(eligibleGames, user)
                         adapter.notifyDataChanged()
+                        adjustRecyclerViewHeight(recyclerView)
                         view.requestLayout()
                     }
                 }
@@ -180,8 +185,7 @@ class HomeFragmentHome : Fragment(), OnGameItemClickListener {
     }
 
     override fun onItemClick(gameUUID: String) {
-        val intent: Intent = Intent(view.context, PlayGame::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        val intent = Intent(view.context, PlayGame::class.java)
         intent.putExtra(INTENT_GAME_TYPE, gameUUID)
         startActivity(intent)
     }
@@ -196,6 +200,26 @@ class HomeFragmentHome : Fragment(), OnGameItemClickListener {
                 view.requestLayout()
             }
             adapter.notifyDataChanged()
+        }
+    }
+
+    fun adjustRecyclerViewHeight(recyclerView: RecyclerView) {
+        val adapter = recyclerView.adapter ?: return
+        if (adapter.itemCount > 0) {
+            // Measure the height of a single item
+            val holder = adapter.createViewHolder(recyclerView, adapter.getItemViewType(0))
+            adapter.onBindViewHolder(holder, 0)
+            holder.itemView.measure(
+                View.MeasureSpec.makeMeasureSpec(recyclerView.width, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.UNSPECIFIED
+            )
+            val itemHeight = holder.itemView.measuredHeight
+            // Calculate the total height
+            val totalHeight = itemHeight * adapter.itemCount
+            // Set the height of the RecyclerView
+            val params = recyclerView.layoutParams
+            params.height = totalHeight
+            recyclerView.layoutParams = params
         }
     }
 }

@@ -132,10 +132,7 @@ class PlayStartPage(private val gameType: String?) : Fragment(){
         }
 
         backButton.setOnClickListener{
-            val intent: Intent = Intent(view?.context, HomeActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(intent)
-            activity?.overridePendingTransition(R.anim.fade_in_anim, R.anim.fade_in_anim)
+            activity?.finish()
         }
 
         return view

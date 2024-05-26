@@ -16,6 +16,54 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/statTitleLayout"
+                android:layout_width="match_parent"
+                android:layout_height="230dp"
+                android:background="@color/dark_blue"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/playTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/robus"
+                    android:text="Istoric"
+                    android:textColor="@color/light_gray"
+                    android:textSize="68sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/editTextText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/rounded_edittext_background"
+                    android:ems="10"
+                    android:hint="@string/cauta_joc"
+                    android:inputType="text"
+                    android:padding="8dp"
+                    android:paddingStart="18dp"
+                    android:paddingEnd="9dp"
+                    android:textColor="@color/brilliant_rose"
+                    android:textColorHint="@color/finn"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/playTitle"
+                    app:layout_constraintVertical_bias="0.687" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/lineChart"
                 android:layout_width="match_parent"
@@ -32,8 +80,9 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_below="@id/lineChart"
+                android:layout_marginTop="-40dp"
                 app:layout_constraintEnd_toStartOf="@+id/buttonWeekly"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/statTitleLayout"
                 app:srcCompat="@drawable/day_icon" />
 
             <ImageView
@@ -43,7 +92,7 @@
                 android:layout_below="@id/lineChart"
                 android:layout_toEndOf="@id/buttonDaily"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/buttonWeekly"
                 app:srcCompat="@drawable/month_icon" />
 
             <ImageView
@@ -53,7 +102,7 @@
                 android:layout_below="@id/lineChart"
                 android:layout_toEndOf="@id/buttonWeekly"
                 app:layout_constraintEnd_toStartOf="@+id/buttonMonthly"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/buttonDaily"
                 app:srcCompat="@drawable/week_icon" />
 
             <androidx.recyclerview.widget.RecyclerView

@@ -77,4 +77,8 @@ class HomeStatsRecycleViewAdapter(
     override fun getItemCount(): Int {
         return user.exerciseHistory?.size ?: 0
     }
+
+    fun notifyDataChanged(){
+        notifyDataSetChanged()
+    }
 }
