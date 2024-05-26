@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/dark_blue"
+    android:background="@color/light_gray"
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -56,44 +56,44 @@
 
     <ImageView
         android:id="@+id/sortByFavs"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
-        android:background="@color/finn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="1dp"
         android:elevation="8dp"
-        android:padding="4dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:padding="2dp"
+        android:background="@color/light_gray"
+        app:layout_constraintEnd_toStartOf="@+id/sortAlphabetic"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
         app:srcCompat="@drawable/heart_full_icon" />
 
     <ImageView
         android:id="@+id/sortAlphabetic"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="1dp"
-        android:background="@color/finn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="1dp"
         android:elevation="8dp"
-        android:padding="5dp"
-        app:srcCompat="@drawable/from_a_to_z"
+        android:padding="4dp"
+        android:background="@color/light_gray"
         app:layout_constraintBottom_toBottomOf="@+id/sortByFavs"
-        app:layout_constraintStart_toEndOf="@+id/sortByFavs"
+        app:layout_constraintEnd_toStartOf="@+id/sortRecent"
         app:layout_constraintTop_toTopOf="@+id/sortByFavs"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/from_a_to_z" />
 
     <ImageView
         android:id="@+id/sortRecent"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="1dp"
-        android:background="@color/finn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="4dp"
         android:elevation="8dp"
-        android:padding="4dp"
-        app:srcCompat="@drawable/clock"
+        android:padding="2dp"
+        android:background="@color/light_gray"
         app:layout_constraintBottom_toBottomOf="@+id/sortByFavs"
-        app:layout_constraintStart_toEndOf="@+id/sortAlphabetic"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/sortByFavs"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/clock" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -101,7 +101,6 @@
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:background="@color/finn"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -125,7 +124,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginEnd="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"

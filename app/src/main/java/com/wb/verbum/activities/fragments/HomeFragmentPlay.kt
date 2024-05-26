@@ -27,6 +27,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.Thread.sleep
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -89,7 +90,7 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
         sortByFavs.setOnClickListener {
             if (sortByFavs.getTag(IS_FAVS_SORTED) as Boolean) {
                 sortByFavs.setTag(IS_FAVS_SORTED, false)
-                val newColor = ContextCompat.getColor(view.context, R.color.finn)
+                val newColor = ContextCompat.getColor(view.context, R.color.light_gray)
                 sortByFavs.setBackgroundColor(newColor)
             } else {
                 sortByFavs.setTag(IS_FAVS_SORTED, true)
@@ -97,7 +98,8 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
                 sortByFavs.setBackgroundColor(newColor)
             }
             GlobalScope.launch(Dispatchers.Main) {
-                 eligibleGames = sortGames(allGames, sortByFavs.getTag(IS_FAVS_SORTED) as Boolean,
+                eligibleGames = sortGames(
+                    allGames, sortByFavs.getTag(IS_FAVS_SORTED) as Boolean,
                     sortAlphabetic.getTag(IS_ALPHA_SORTED) as Boolean,
                     sortRecent.getTag(IS_RECENT_SORTED) as Boolean,
                     user
@@ -111,7 +113,7 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
         sortAlphabetic.setOnClickListener {
             if (sortAlphabetic.getTag(IS_ALPHA_SORTED) as Boolean) {
                 sortAlphabetic.setTag(IS_ALPHA_SORTED, false)
-                val newColor = ContextCompat.getColor(view.context, R.color.finn)
+                val newColor = ContextCompat.getColor(view.context, R.color.light_gray)
                 sortAlphabetic.setBackgroundColor(newColor)
             } else {
                 sortAlphabetic.setTag(IS_ALPHA_SORTED, true)
@@ -120,7 +122,7 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
             }
 
             GlobalScope.launch(Dispatchers.Main) {
-                 eligibleGames = sortGames(
+                eligibleGames = sortGames(
                     allGames, sortByFavs.getTag(IS_FAVS_SORTED) as Boolean,
                     sortAlphabetic.getTag(IS_ALPHA_SORTED) as Boolean,
                     sortRecent.getTag(IS_RECENT_SORTED) as Boolean,
@@ -135,7 +137,7 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
         sortRecent.setOnClickListener {
             if (sortRecent.getTag(IS_RECENT_SORTED) as Boolean) {
                 sortRecent.setTag(IS_RECENT_SORTED, false)
-                val newColor = ContextCompat.getColor(view.context, R.color.finn)
+                val newColor = ContextCompat.getColor(view.context, R.color.light_gray)
                 sortRecent.setBackgroundColor(newColor)
             } else {
                 sortRecent.setTag(IS_RECENT_SORTED, true)
@@ -154,7 +156,6 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
                 view.requestLayout()
             }
         }
-
         return view
     }
 
@@ -205,7 +206,7 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
     @OptIn(DelicateCoroutinesApi::class)
     override fun onResume() {
         super.onResume()
-        if (::adapter.isInitialized){
+        if (::adapter.isInitialized) {
             GlobalScope.launch(Dispatchers.IO) {
                 val user = userService.getAllUsers()[0]
                 adapter.updateItems(eligibleGames, user)
