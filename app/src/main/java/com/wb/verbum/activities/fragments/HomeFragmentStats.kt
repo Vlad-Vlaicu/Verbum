@@ -2,9 +2,12 @@ package com.wb.verbum.activities.fragments
 
 import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -78,12 +81,50 @@ class HomeFragmentStats : Fragment() {
             }
 
             val statRecycleView: RecyclerView = view.findViewById(R.id.statsRecycleView)
+
+
             val adapter = HomeStatsRecycleViewAdapter(
-                user, userService, view.context
+                user.exerciseHistory!!, user, userService, view.context
             )
+
+
             statRecycleView.adapter = adapter
             statRecycleView.layoutManager = LinearLayoutManager(view.context)
             adjustRecyclerViewHeight(statRecycleView)
+
+            val searchBar = view.findViewById<EditText>(R.id.statsSearchBar)
+
+            searchBar.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                    // No implementation needed
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    // Filter and sort the games list based on the entered text
+                    val query = s.toString()
+                    val words =
+                        query.split("\\s+".toRegex()) // Split the query into individual words
+                    val filteredGames = filterGames(user.exerciseHistory!!, words)
+                    val sortedGames = sortGames(filteredGames, words)
+
+                    // Update the adapter with the filtered and sorted list
+
+                    adapter.updateItems(sortedGames)
+                    adapter.notifyDataChanged()
+                    adjustRecyclerViewHeight(statRecycleView)
+                    view.requestLayout()
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    // No implementation needed
+                }
+            })
+
             view.requestLayout()
         }
 
@@ -280,8 +321,10 @@ class HomeFragmentStats : Fragment() {
 
     fun adjustRecyclerViewHeight(recyclerView: RecyclerView) {
         val adapter = recyclerView.adapter ?: return
-        if (adapter.itemCount > 0) {
-            // Measure the height of a single item
+        val itemCount = adapter.itemCount
+        val params = recyclerView.layoutParams
+
+        if (itemCount > 0) {
             val holder = adapter.createViewHolder(recyclerView, adapter.getItemViewType(0))
             adapter.onBindViewHolder(holder, 0)
             holder.itemView.measure(
@@ -289,12 +332,55 @@ class HomeFragmentStats : Fragment() {
                 View.MeasureSpec.UNSPECIFIED
             )
             val itemHeight = holder.itemView.measuredHeight
-            // Calculate the total height
             val totalHeight = itemHeight * adapter.itemCount
-            // Set the height of the RecyclerView
-            val params = recyclerView.layoutParams
             params.height = totalHeight
-            recyclerView.layoutParams = params
+        } else {
+            params.height = 0
+        }
+
+        recyclerView.layoutParams = params
+    }
+
+    private fun filterGames(
+        gamesList: List<ExerciseInfo>,
+        words: List<String>
+    ): List<ExerciseInfo> {
+        return gamesList.filter { game ->
+            words.all { word ->
+                game.name?.contains(word, ignoreCase = true) == true ||
+                        game.description?.contains(word, ignoreCase = true) == true ||
+                        game.tags?.any { tag ->
+                            tag.displayName.contains(
+                                word,
+                                ignoreCase = true
+                            )
+                        } == true ||
+                        game.status?.displayName?.contains(word, ignoreCase = true) == true
+            }
+        }
+    }
+
+    private fun sortGames(gamesList: List<ExerciseInfo>, words: List<String>): List<ExerciseInfo> {
+        // Sort the games list based on relevance (you can implement your own logic here)
+        // For example, you can sort by the number of matches in title, description, and tags
+        return gamesList.sortedByDescending { game ->
+            var relevanceScore = 0
+            words.forEach { word ->
+                if (game.name?.contains(word, ignoreCase = true) == true) {
+                    relevanceScore += 3
+                }
+                if (game.description?.contains(word, ignoreCase = true) == true) {
+                    relevanceScore += 2
+                }
+                relevanceScore += game.tags?.count { tag ->
+                    tag.displayName.contains(
+                        word,
+                        ignoreCase = true
+                    )
+                }
+                    ?: 0
+            }
+            relevanceScore
         }
     }
 }

@@ -23,14 +23,12 @@ import com.wb.verbum.model.User
 import com.wb.verbum.service.GameService
 import com.wb.verbum.service.StorageService
 import com.wb.verbum.service.UserService
-import com.wb.verbum.utils.Constants
 import com.wb.verbum.utils.Constants.INTENT_GAME_TYPE
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.Thread.sleep
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -271,8 +269,10 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
 
     fun adjustRecyclerViewHeight(recyclerView: RecyclerView) {
         val adapter = recyclerView.adapter ?: return
-        if (adapter.itemCount > 0) {
-            // Measure the height of a single item
+        val itemCount = adapter.itemCount
+        val params = recyclerView.layoutParams
+
+        if (itemCount > 0) {
             val holder = adapter.createViewHolder(recyclerView, adapter.getItemViewType(0))
             adapter.onBindViewHolder(holder, 0)
             holder.itemView.measure(
@@ -280,21 +280,27 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
                 View.MeasureSpec.UNSPECIFIED
             )
             val itemHeight = holder.itemView.measuredHeight
-            // Calculate the total height
             val totalHeight = itemHeight * adapter.itemCount
-            // Set the height of the RecyclerView
-            val params = recyclerView.layoutParams
             params.height = totalHeight
-            recyclerView.layoutParams = params
+        } else {
+            params.height = 0
         }
+
+        recyclerView.layoutParams = params
     }
+
 
     private fun filterGames(gamesList: List<Game>, words: List<String>): List<Game> {
         return gamesList.filter { game ->
             words.all { word ->
-                game.name?.contains(word, ignoreCase = true) == true  ||
-                        game.description?.contains(word, ignoreCase = true) == true  ||
-                        game.tags?.any { tag -> tag.displayName.contains(word, ignoreCase = true) } == true
+                game.name?.contains(word, ignoreCase = true) == true ||
+                        game.description?.contains(word, ignoreCase = true) == true ||
+                        game.tags?.any { tag ->
+                            tag.displayName.contains(
+                                word,
+                                ignoreCase = true
+                            )
+                        } == true
             }
         }
     }
@@ -311,7 +317,12 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
                 if (game.description?.contains(word, ignoreCase = true) == true) {
                     relevanceScore += 2
                 }
-                relevanceScore += game.tags?.count { tag -> tag.displayName.contains(word, ignoreCase = true) }
+                relevanceScore += game.tags?.count { tag ->
+                    tag.displayName.contains(
+                        word,
+                        ignoreCase = true
+                    )
+                }
                     ?: 0
             }
             relevanceScore

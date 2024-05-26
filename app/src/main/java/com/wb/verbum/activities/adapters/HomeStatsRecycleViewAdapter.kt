@@ -1,5 +1,6 @@
 package com.wb.verbum.activities.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.wb.verbum.R
+import com.wb.verbum.model.ExerciseInfo
 import com.wb.verbum.model.GameStatus
 import com.wb.verbum.model.User
 import com.wb.verbum.service.UserService
@@ -15,6 +17,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class HomeStatsRecycleViewAdapter(
+    private var history: List<ExerciseInfo>,
     private var user: User,
     private val userService: UserService,
     private val context: Context
@@ -38,47 +41,47 @@ class HomeStatsRecycleViewAdapter(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
-        val history = user.exerciseHistory
+        val reversedHistory = history.reversed()
+        val item = reversedHistory[position]
 
-        if (history != null) {
+        holder.gameTitle.text = item.name
+        holder.description.text = item.description
+        val date = LocalDateTime.parse(
+            item.startingTime,
+            DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        )
+        holder.date.text = date.format(DateTimeFormatter.ofPattern("dd MMM HH:mm"))
 
-            val reversedHistory = history.reversed()
-            val item = reversedHistory[position]
+        if (item.status == GameStatus.IN_PROGRESS) {
+            item.status = GameStatus.INCOMPLETE
 
-            holder.gameTitle.text = item.name
-            holder.description.text = item.description
-            val date = LocalDateTime.parse(
-                item.startingTime,
-                DateTimeFormatter.ISO_LOCAL_DATE_TIME
-            )
-            holder.date.text = date.format(DateTimeFormatter.ofPattern("dd MMM HH:mm"))
-
-            if (item.status == GameStatus.IN_PROGRESS) {
-                item.status = GameStatus.INCOMPLETE
-
-                userService.update(user)
-            }
-
-            if (item.status == GameStatus.COMPLETED) {
-                holder.status.text = "COMPLETAT"
-                holder.status.setTextColor(ContextCompat.getColor(context, R.color.green))
-            } else {
-                holder.status.text = "INCOMPLET"
-                holder.status.setTextColor(ContextCompat.getColor(context, R.color.orange))
-            }
-
-            val noRounds = "Numar runde: " + (item.rounds?.size ?: 0)
-
-            holder.noRounds.text = noRounds
-
+            userService.update(user)
         }
+
+        if (item.status == GameStatus.COMPLETED) {
+            holder.status.text = "COMPLETAT"
+            holder.status.setTextColor(ContextCompat.getColor(context, R.color.green))
+        } else {
+            holder.status.text = "INCOMPLET"
+            holder.status.setTextColor(ContextCompat.getColor(context, R.color.orange))
+        }
+
+        val noRounds = "Numar runde: " + (item.rounds?.size ?: 0)
+
+        holder.noRounds.text = noRounds
+
     }
 
     override fun getItemCount(): Int {
-        return user.exerciseHistory?.size ?: 0
+        return history.size
     }
 
-    fun notifyDataChanged(){
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateItems(newGames: List<ExerciseInfo>) {
+        history = newGames
+    }
+
+    fun notifyDataChanged() {
         notifyDataSetChanged()
     }
 }
