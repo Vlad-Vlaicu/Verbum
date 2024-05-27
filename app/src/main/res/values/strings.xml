@@ -4,4 +4,7 @@
     <string name="connect_with_google">Connect With Google</string>
     <string name="SUCCESS_SOUND_FILE">res/meta_sounds/success.mp3</string>
     <string name="FAIL_SOUND_FILE">res/meta_sounds/fail.mp3</string>
+    <string name="inapoi">INAPOI</string>
+    <string name="joaca">JOACA</string>
+    <string name="descarca_jocul">DESCARCA</string>
 </resources>

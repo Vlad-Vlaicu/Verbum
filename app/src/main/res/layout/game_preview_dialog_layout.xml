@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
+    android:elevation="8dp"
+    android:background="@drawable/dialog_background"
+
+    android:paddingBottom="30dp">
+
+
+    <TextView
+        android:id="@+id/dialogGameTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Corpul uman"
+        android:textColor="@color/space_cadet"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/back_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/continue_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.70" />
+
+    <TextView
+        android:id="@+id/dialogGameDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="16dp"
+        android:maxLines="3"
+        android:paddingStart="20dp"
+        android:paddingEnd="15dp"
+        android:paddingBottom="16dp"
+        android:text="Potriveste partile corpului  dasd  da s dasdd adas dasda dasdas dasdas das d das dasd a d daas asdasdasdasdasdasdasd dasdasdas"
+        android:textColor="@color/space_cadet"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialogGameTitle" />
+
+
+    <TextView
+        android:id="@+id/dialogReturnButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:padding="4dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="INAPOI"
+        android:textColor="@color/space_cadet"
+        android:background="@drawable/round_border_back"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/back_guideline"
+        app:layout_constraintStart_toStartOf="@+id/back_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/dialogGameDescription" />
+
+    <TextView
+        android:id="@+id/dialogPlayButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="DESCARCA"
+        android:textColor="@color/space_cadet"
+        android:background="@drawable/round_border_continue"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/continue_guideline"
+        app:layout_constraintStart_toStartOf="@+id/continue_guideline"
+        app:layout_constraintTop_toTopOf="@+id/dialogReturnButton" />
+</androidx.constraintlayout.widget.ConstraintLayout>

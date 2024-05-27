@@ -152,7 +152,8 @@ class HomeGamesRecycleViewAdapter(
         }
 
         holder.itemView.setOnClickListener {
-            listener.onItemClick(gamesList[position].uuid)
+            val game = gamesList[position]
+            listener.onItemClick(game, holder.downloadDeleteIcon)
         }
     }
 

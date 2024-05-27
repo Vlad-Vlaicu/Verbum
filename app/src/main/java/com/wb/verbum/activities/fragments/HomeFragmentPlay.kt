@@ -1,5 +1,6 @@
 package com.wb.verbum.activities.fragments
 
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -9,8 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wb.verbum.R
@@ -20,6 +23,7 @@ import com.wb.verbum.db.AppDatabase
 import com.wb.verbum.listeners.OnGameItemClickListener
 import com.wb.verbum.model.Game
 import com.wb.verbum.model.User
+import com.wb.verbum.multithreading.downloadResources_GamePreview
 import com.wb.verbum.service.GameService
 import com.wb.verbum.service.StorageService
 import com.wb.verbum.service.UserService
@@ -42,6 +46,7 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
     private lateinit var userService: UserService
     private lateinit var recyclerView: RecyclerView
     private lateinit var searchBar: EditText
+    private lateinit var storageService: StorageService
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreateView(
@@ -53,7 +58,7 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
 
         userService = UserService(AppDatabase.getDatabase(view.context).userDao())
         val gameService = GameService(AppDatabase.getDatabase(view.context).gameDao())
-        val storageService = StorageService(view.context)
+        storageService = StorageService(view.context)
 
         searchBar = view.findViewById(R.id.gamesSearchBar)
 
@@ -248,10 +253,78 @@ class HomeFragmentPlay : Fragment(), OnGameItemClickListener {
         return resultList
     }
 
-    override fun onItemClick(gameUUID: String) {
-        val intent = Intent(view.context, PlayGame::class.java)
-        intent.putExtra(INTENT_GAME_TYPE, gameUUID)
-        startActivity(intent)
+    override fun onItemClick(
+        game: Game,
+        holderSymbolStatus: ImageView
+    ) {
+
+        val dialog = Dialog(view.context)
+        dialog.setContentView(R.layout.game_preview_dialog_layout)
+        dialog.findViewById<TextView>(R.id.dialogGameTitle).text = game.name
+        dialog.findViewById<TextView>(R.id.dialogGameDescription).text = game.description
+
+        val returnButton = dialog.findViewById<TextView>(R.id.dialogReturnButton)
+        returnButton.text = getString(R.string.inapoi)
+        val playButton = dialog.findViewById<TextView>(R.id.dialogPlayButton)
+
+        lifecycleScope.launch {
+
+            val user = withContext(Dispatchers.IO) {
+                userService.getAllUsers()[0]
+            }
+
+            val isDownloaded = user.downloadedGames!!.contains(game.uuid)
+
+            if (isDownloaded) {
+                playButton.text = getString(R.string.joaca)
+                playButton.setTag(R.id.dialogPlayButton, true)
+            } else {
+                playButton.text =
+                    getString(R.string.descarca_jocul)
+                playButton.setTag(R.id.dialogPlayButton, false)
+            }
+
+            returnButton.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            playButton.setOnClickListener {
+                if (playButton.getTag(R.id.dialogPlayButton) as Boolean) {
+                    val intent = Intent(view.context, PlayGame::class.java)
+                    intent.putExtra(INTENT_GAME_TYPE, game.uuid)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
+                } else {
+                    val resToBeDownloaded = arrayListOf<String>()
+                    playButton.isClickable = false
+
+                    for (res in game.requiredResources!!) {
+
+                        if (!storageService.doesFileExistsInStorage(res)) {
+                            resToBeDownloaded.add(res)
+                        }
+                    }
+
+                    if (resToBeDownloaded.size != 0) {
+                        lifecycleScope.launch {
+                            downloadResources_GamePreview(
+                                resToBeDownloaded,
+                                playButton,
+                                holderSymbolStatus,
+                                storageService,
+                                user,
+                                userService,
+                                game.uuid
+                            )
+                        }
+                    }
+                }
+                Thread.sleep(200)
+                playButton.isClickable = true
+            }
+            dialog.show()
+        }
+
     }
 
     @OptIn(DelicateCoroutinesApi::class)

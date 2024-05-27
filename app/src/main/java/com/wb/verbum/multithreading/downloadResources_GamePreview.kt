@@ -1,5 +1,6 @@
 package com.wb.verbum.multithreading
 
+import android.widget.ImageView
 import android.widget.TextView
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
@@ -14,7 +15,8 @@ import java.io.IOException
 
 suspend fun downloadResources_GamePreview(
     resources: List<String>,
-    holder: TextView,
+    previewHolder: TextView,
+    initialHolder: ImageView,
     storageService: StorageService,
     user: User,
     userService: UserService,
@@ -22,7 +24,7 @@ suspend fun downloadResources_GamePreview(
 ) {
     withContext(Dispatchers.IO) {
         try {
-            holder.setTag(R.id.play_download_game_preview, true)
+            previewHolder.setTag(R.id.dialogPlayButton, true)
 
             val storage = Firebase.storage
             val storageRef = storage.reference
@@ -34,14 +36,15 @@ suspend fun downloadResources_GamePreview(
                 imagesRef.getBytes(maxDownloadSizeBytes)
                     .addOnSuccessListener { bytes ->
                         storageService.saveFileToStorage(bytes, res)
-                        holder.text = "JOACA"
+                        previewHolder.text = "JOACA"
+                        initialHolder.setImageResource(R.drawable.delete_icon)
                     }
                     .addOnFailureListener { exception ->
                         // Handle any errors
                         if (exception is IOException) {
-                            holder.setTag(R.id.play_download_game_preview, false)
+                            previewHolder.setTag(R.id.dialogPlayButton, false)
                         } else {
-                            holder.setTag(R.id.play_download_game_preview, false)
+                            previewHolder.setTag(R.id.dialogPlayButton, false)
                         }
                     }
             }
@@ -52,10 +55,8 @@ suspend fun downloadResources_GamePreview(
         } catch (e: Exception) {
             // Handle exceptions
             e.printStackTrace()
-            holder.setTag(R.id.play_download_game_preview, false)
-            holder.text = "DESCARCA JOCUL"
-        } finally {
-            holder.isClickable = true
+            previewHolder.setTag(R.id.dialogPlayButton, false)
+            previewHolder.text = "DESCARCA"
         }
     }
 }
