@@ -1,6 +1,7 @@
 package com.wb.verbum.model
 
 import java.io.Serializable
+import java.time.LocalDateTime
 
 class User : Serializable {
 
@@ -18,6 +19,8 @@ class User : Serializable {
 
     var downloadedGames: MutableList<String>? = null
 
+    var logInTimes: MutableList<String> = mutableListOf()
+
     constructor()
 
     constructor(
@@ -27,7 +30,8 @@ class User : Serializable {
         lastUpdated: String?,
         exerciseHistory: MutableList<ExerciseInfo>?,
         favGames: MutableList<String>?,
-        downloadedGames: MutableList<String>?
+        downloadedGames: MutableList<String>?,
+        logInTimes: MutableList<String>
     ) {
         this.uuid = uuid
         this.name = name
@@ -36,5 +40,6 @@ class User : Serializable {
         this.exerciseHistory = exerciseHistory
         this.favGames = favGames
         this.downloadedGames = downloadedGames
+        this.logInTimes = logInTimes
     }
 }

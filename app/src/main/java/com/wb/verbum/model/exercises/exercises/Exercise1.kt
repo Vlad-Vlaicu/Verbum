@@ -160,62 +160,62 @@ class Exercise1 : Fragment() {
             activity?.overridePendingTransition(R.anim.fade_in_anim, R.anim.fade_in_anim)
             logFinishExercise()
             activity?.finish()
-        }
+        } else {
+            for (frame in imagesHoldersFrames) {
+                frame.visibility = VISIBLE
+            }
 
-        for (frame in imagesHoldersFrames) {
-            frame.visibility = VISIBLE
-        }
+            for (image in imagesHolders) {
+                image.isClickable = true
+            }
 
-        for (image in imagesHolders) {
-            image.isClickable = true
-        }
+            backgroundView.setBackgroundColor(resources.getColor(R.color.white))
+            playButton.isClickable = true
 
-        backgroundView.setBackgroundColor(resources.getColor(R.color.white))
-        playButton.isClickable = true
+            val animalSound = mp3FilePaths[currentTrackIndex]
+            val animalName = extractAnimalName(animalSound)
+            val animalImage = storageService.retrieveFile(jpgFilePaths.filter {
+                it.contains(
+                    animalName,
+                    ignoreCase = true
+                )
+            }
+                .random())
 
-        val animalSound = mp3FilePaths[currentTrackIndex]
-        val animalName = extractAnimalName(animalSound)
-        val animalImage = storageService.retrieveFile(jpgFilePaths.filter {
-            it.contains(
-                animalName,
-                ignoreCase = true
-            )
-        }
-            .random())
+            val otherImages = jpgFilePaths.filter { !it.contains(animalName, ignoreCase = true) }
+                .shuffled()
+                .take(3)
+                .map { storageService.retrieveFile(it) }
 
-        val otherImages = jpgFilePaths.filter { !it.contains(animalName, ignoreCase = true) }
-            .shuffled()
-            .take(3)
-            .map { storageService.retrieveFile(it) }
+            imagesHolders.shuffle()
 
-        imagesHolders.shuffle()
+            val bitmap = BitmapFactory.decodeFile(animalImage?.absolutePath)
+            imagesHolders[0].setImageBitmap(bitmap)
+            Log.d("AICI", "AICI main IM")
+            imagesHolders[0].setTag(HOLDER_TAG, true)
 
-        val bitmap = BitmapFactory.decodeFile(animalImage?.absolutePath)
-        imagesHolders[0].setImageBitmap(bitmap)
-        Log.d("AICI", "AICI main IM")
-        imagesHolders[0].setTag(HOLDER_TAG, true)
+            for (i in 1 until imagesHolders.size) {
+                // Check if the index is within the bounds of the imageList
+                if (i - 1 < otherImages.size) {
+                    Log.d("AICI", "AICI other IM")
+                    val otherImage = otherImages[i - 1]
+                    val otherImageBitmap = BitmapFactory.decodeFile(otherImage?.absolutePath)
+                    try {
+                        imagesHolders[i].setImageBitmap(otherImageBitmap)
+                        imagesHolders[i].setTag(HOLDER_TAG, false)
 
-        for (i in 1 until imagesHolders.size) {
-            // Check if the index is within the bounds of the imageList
-            if (i - 1 < otherImages.size) {
-                Log.d("AICI", "AICI other IM")
-                val otherImage = otherImages[i - 1]
-                val otherImageBitmap = BitmapFactory.decodeFile(otherImage?.absolutePath)
-                try {
-                    imagesHolders[i].setImageBitmap(otherImageBitmap)
-                    imagesHolders[i].setTag(HOLDER_TAG, false)
-
-                } catch (e: Exception) {
-                    e.message?.let { Log.d("AICI", it) }
+                    } catch (e: Exception) {
+                        e.message?.let { Log.d("AICI", it) }
+                    }
                 }
             }
+
+            initializeMediaPlayer(animalSound)
+            mediaPlayer.start()
+            playButton.startAnimation(pulseAnimation)
+
+            logNewRound()
         }
-
-        initializeMediaPlayer(animalSound)
-        mediaPlayer.start()
-        playButton.startAnimation(pulseAnimation)
-
-        logNewRound()
     }
 
     private fun endRound(response: ImageView) {

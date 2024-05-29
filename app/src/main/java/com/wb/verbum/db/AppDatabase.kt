@@ -9,7 +9,7 @@ import com.wb.verbum.dao.UserDao
 import com.wb.verbum.entities.GameDB
 import com.wb.verbum.entities.UserDB
 
-@Database(entities = [UserDB::class, GameDB::class], version = 3)
+@Database(entities = [UserDB::class, GameDB::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun gameDao(): GameDao

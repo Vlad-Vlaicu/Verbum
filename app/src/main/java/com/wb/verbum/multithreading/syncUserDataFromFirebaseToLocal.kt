@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
 
 @OptIn(DelicateCoroutinesApi::class)
 suspend fun syncUserDataFromFirebaseToLocal(
@@ -71,6 +72,9 @@ suspend fun syncUserDataFromFirebaseToLocal(
 
             val task = firebaseService.getGamesData()
 
+            val userr = userService.getAllUsers()[0]
+            userr.logInTimes.add(LocalDateTime.now().toString())
+            userService.update(userr)
 
             task.addOnSuccessListener { gameList ->
                 // Handle success: gameList contains the list of games retrieved from Firestore

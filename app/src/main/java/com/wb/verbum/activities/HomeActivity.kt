@@ -20,21 +20,21 @@ class HomeActivity : AppCompatActivity() {
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-        binding.homeButton.setOnClickListener{
+        binding.homeButton.setOnClickListener {
             binding.homeButton.setTextColor(resources.getColor(R.color.magenta_haze))
             binding.playButton.setTextColor(resources.getColor(R.color.space_cadet))
             binding.statButton.setTextColor(resources.getColor(R.color.space_cadet))
             replaceFragment(HomeFragmentHome())
         }
 
-        binding.playButton.setOnClickListener{
+        binding.playButton.setOnClickListener {
             binding.homeButton.setTextColor(resources.getColor(R.color.space_cadet))
             binding.playButton.setTextColor(resources.getColor(R.color.magenta_haze))
             binding.statButton.setTextColor(resources.getColor(R.color.space_cadet))
             replaceFragment(HomeFragmentPlay())
         }
 
-        binding.statButton.setOnClickListener{
+        binding.statButton.setOnClickListener {
             binding.homeButton.setTextColor(resources.getColor(R.color.space_cadet))
             binding.playButton.setTextColor(resources.getColor(R.color.space_cadet))
             binding.statButton.setTextColor(resources.getColor(R.color.magenta_haze))
