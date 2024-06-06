@@ -42,8 +42,8 @@ class NotificationWorker(appContext: Context, workerParams: WorkerParameters) :
             PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val notification = NotificationCompat.Builder(context, channelId)
-            .setContentTitle("App Reminder")
-            .setContentText("It's time to use the app!")
+            .setContentTitle("Verbum: Hai la joaca!")
+            .setContentText("Nu uita sa faci exercitiile de azi!")
             .setSmallIcon(R.drawable.threeyearoldtransparent)
             .setContentIntent(pendingIntent)
             .build()

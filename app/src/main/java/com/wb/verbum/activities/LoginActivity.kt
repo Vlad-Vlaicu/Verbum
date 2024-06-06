@@ -28,7 +28,6 @@ import com.wb.verbum.databinding.LoginLayoutBinding
 import com.wb.verbum.db.AppDatabase
 import com.wb.verbum.multithreading.prepareNextNotification
 import com.wb.verbum.multithreading.syncUserDataFromFirebaseToLocal
-import com.wb.verbum.notifications.UsagePredictor
 import com.wb.verbum.service.FirebaseService
 import com.wb.verbum.service.GameService
 import com.wb.verbum.service.UserService

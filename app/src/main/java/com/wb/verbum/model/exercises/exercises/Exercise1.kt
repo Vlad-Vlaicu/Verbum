@@ -318,7 +318,6 @@ class Exercise1 : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("AICI", "AICI DESTROY")
         // Release the media player resources when the activity is destroyed
         if (::mediaPlayer.isInitialized) {
             mediaPlayer.release()
@@ -332,7 +331,6 @@ class Exercise1 : Fragment() {
         if (user.exerciseHistory == null) {
             user.exerciseHistory = mutableListOf()
         }
-        user.exerciseHistory!!.add(newExercise)
         userService.update(user)
     }
 }
