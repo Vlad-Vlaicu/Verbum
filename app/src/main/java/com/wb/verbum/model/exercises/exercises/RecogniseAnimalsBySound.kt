@@ -35,7 +35,7 @@ import java.io.File
 import java.lang.Thread.sleep
 import java.time.LocalDateTime
 
-class Exercise1 : Fragment() {
+class RecogniseAnimalsBySound : Fragment() {
 
     private lateinit var mediaPlayer: MediaPlayer
     private lateinit var user: User
@@ -97,7 +97,7 @@ class Exercise1 : Fragment() {
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
-                game = gameService.getGameByUUID("firstDemo")!!
+                game = gameService.getGameByUUID("recogniseAnimalsBySound")!!
                 user = userService.getAllUsers()[0]
 
                 mp3FilePaths = mutableListOf()
@@ -133,6 +133,7 @@ class Exercise1 : Fragment() {
     }
 
     private fun startGame() {
+        mp3FilePaths = multiplyListToSize(mp3FilePaths, NO_ROUNDS * 3)
         mp3FilePaths.shuffle()
 
         mp3FilePaths = mp3FilePaths.take(NO_ROUNDS).toMutableList()
@@ -191,13 +192,11 @@ class Exercise1 : Fragment() {
 
             val bitmap = BitmapFactory.decodeFile(animalImage?.absolutePath)
             imagesHolders[0].setImageBitmap(bitmap)
-            Log.d("AICI", "AICI main IM")
             imagesHolders[0].setTag(HOLDER_TAG, true)
 
             for (i in 1 until imagesHolders.size) {
                 // Check if the index is within the bounds of the imageList
                 if (i - 1 < otherImages.size) {
-                    Log.d("AICI", "AICI other IM")
                     val otherImage = otherImages[i - 1]
                     val otherImageBitmap = BitmapFactory.decodeFile(otherImage?.absolutePath)
                     try {
@@ -214,7 +213,7 @@ class Exercise1 : Fragment() {
             mediaPlayer.start()
             playButton.startAnimation(pulseAnimation)
 
-            logNewRound()
+            logNewRound(animalName)
         }
     }
 
@@ -292,11 +291,12 @@ class Exercise1 : Fragment() {
         userService.update(user)
     }
 
-    private fun logNewRound() {
+    private fun logNewRound(name: String) {
         val round = ExerciseRound()
         round.startTime = LocalDateTime.now().toString()
         round.isCompleted = false
         round.isSuccess = false
+        round.name = name
         newExercise.rounds?.add(round)
 
         userService.update(user)
@@ -314,6 +314,18 @@ class Exercise1 : Fragment() {
 
             userService.update(user)
         }
+    }
+
+    fun multiplyListToSize(list: MutableList<String>, minSize: Int): MutableList<String> {
+        if (list.isEmpty()) return list
+
+        val result = mutableListOf<String>()
+        while (result.size < minSize) {
+            result.addAll(list)
+        }
+
+        // If the result size exceeds the minSize, trim the excess elements
+        return result
     }
 
     override fun onDestroy() {

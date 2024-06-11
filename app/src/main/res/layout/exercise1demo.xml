@@ -55,7 +55,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="fill"
                 android:background="@color/white"
-                android:scaleType="centerCrop"
+                android:scaleType="fitXY"
                 android:src="@drawable/clock" />
 
         </FrameLayout>
@@ -77,7 +77,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="fill"
                 android:background="@color/white"
-                android:scaleType="centerCrop"
+                android:scaleType="fitXY"
                 android:src="@drawable/clock" />
 
         </FrameLayout>
@@ -99,7 +99,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="fill"
                 android:background="@color/white"
-                android:scaleType="centerCrop"
+                android:scaleType="fitXY"
                 android:src="@drawable/clock" />
 
         </FrameLayout>
@@ -121,7 +121,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="fill"
                 android:background="@color/white"
-                android:scaleType="centerCrop"
+                android:scaleType="fitXY"
                 android:src="@drawable/clock" />
 
         </FrameLayout>
