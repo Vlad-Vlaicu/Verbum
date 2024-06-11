@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.time.LocalDateTime
+import java.util.UUID
 
 class RecogniseGeometricFigures : Fragment() {
 
@@ -141,6 +142,7 @@ class RecogniseGeometricFigures : Fragment() {
         mp3FilePaths = mp3FilePaths.take(NO_ROUNDS).toMutableList()
 
         newExercise = ExerciseInfo()
+        newExercise.id = UUID.randomUUID().toString()
         newExercise.name = game.name
         newExercise.description = game.description
         newExercise.tags = game.tags

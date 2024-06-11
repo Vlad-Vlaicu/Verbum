@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -18,9 +18,15 @@
         android:theme="@style/Theme.Verbum"
         tools:targetApi="31">
         <activity
-            android:name=".activities.PlayGame"
+            android:name=".activities.StatsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_stats"
             android:screenOrientation="portrait"
-            android:exported="false" />
+            android:theme="@style/Theme.Verbum" />
+        <activity
+            android:name=".activities.PlayGame"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.LoginActivity"
             android:exported="true"

@@ -2,6 +2,7 @@ package com.wb.verbum.activities.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +10,12 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.wb.verbum.R
+import com.wb.verbum.activities.StatsActivity
 import com.wb.verbum.model.ExerciseInfo
 import com.wb.verbum.model.GameStatus
 import com.wb.verbum.model.User
 import com.wb.verbum.service.UserService
+import com.wb.verbum.utils.Constants
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -69,6 +72,12 @@ class HomeStatsRecycleViewAdapter(
         val noRounds = "Numar runde: " + (item.rounds?.size ?: 0)
 
         holder.noRounds.text = noRounds
+
+        holder.itemView.setOnClickListener {
+            val intent: Intent = Intent(context, StatsActivity::class.java)
+            intent.putExtra(Constants.INTENT_GAME_STAT, item.id)
+            context.startActivity(intent)
+        }
 
     }
 

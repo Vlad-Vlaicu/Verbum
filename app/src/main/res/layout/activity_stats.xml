@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".activities.StatsActivity">
+
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/statsTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                android:ellipsize="none"
+                android:gravity="center"
+                android:maxLines="2"
+                android:text="Forme geometrice"
+                android:textColor="@color/space_cadet"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/gameStatus" />
+
+
+            <TextView
+                android:id="@+id/statsDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:maxLines="3"
+                android:paddingStart="20dp"
+                android:paddingEnd="15dp"
+                android:paddingBottom="16dp"
+                android:text="In acest joc ti se va spune sa alegi o forma geometrica "
+                android:textColor="@color/space_cadet"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/statsTitle" />
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/reactionTimeChart"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/binaryCorrectAnswer">
+
+
+            </com.github.mikephil.charting.charts.LineChart>
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/binaryCorrectAnswer"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="44dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/wrongRoundsNumber" />
+
+            <TextView
+                android:id="@+id/statsDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:paddingStart="5dp"
+                android:text="23 May 09:34"
+                android:textColor="@color/space_cadet"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/statsTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:text="3-5 ani"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/statsDate" />
+
+
+            <TextView
+                android:id="@+id/roundsTotalNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="12dp"
+                android:text="Numar de runde: 34"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/statsDescription" />
+
+            <TextView
+                android:id="@+id/correctRoundsNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="8dp"
+                android:text="Corecte: 45"
+                android:textColor="@color/green"
+                app:layout_constraintStart_toStartOf="@+id/roundsTotalNumber"
+                app:layout_constraintTop_toBottomOf="@+id/roundsTotalNumber" />
+
+            <TextView
+                android:id="@+id/wrongRoundsNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Gresite: 34"
+                android:textColor="@color/brilliant_rose"
+                app:layout_constraintStart_toStartOf="@+id/correctRoundsNumber"
+                app:layout_constraintTop_toBottomOf="@+id/correctRoundsNumber" />
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/roundsChart"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginEnd="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/wrongRoundsNumber"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/roundsTotalNumber"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/gameStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="COMPLETAT"
+                android:textSize="22sp"
+                app:layout_constraintEnd_toStartOf="@+id/statsTag"
+                app:layout_constraintHorizontal_bias="0.373"
+                app:layout_constraintStart_toEndOf="@+id/statsDate"
+                app:layout_constraintTop_toTopOf="@+id/statsDate" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+    </ScrollView>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

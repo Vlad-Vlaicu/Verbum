@@ -4,6 +4,7 @@ import java.io.Serializable
 
 class ExerciseInfo : Serializable {
 
+    var id: String = ""
     var name: String? = null
     var description: String? = null
     var tags: MutableList<ExerciseTag>? = null
@@ -15,6 +16,7 @@ class ExerciseInfo : Serializable {
     constructor()
 
     constructor(
+        id: String,
         name: String?,
         description: String?,
         tags: MutableList<ExerciseTag>?,
@@ -30,5 +32,6 @@ class ExerciseInfo : Serializable {
         this.endingTime = endingTime
         this.rounds = rounds
         this.status = status
+        this.id = id
     }
 }
