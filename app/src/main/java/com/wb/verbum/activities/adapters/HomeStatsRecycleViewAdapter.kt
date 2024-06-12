@@ -18,6 +18,7 @@ import com.wb.verbum.service.UserService
 import com.wb.verbum.utils.Constants
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 class HomeStatsRecycleViewAdapter(
     private var history: List<ExerciseInfo>,
@@ -61,6 +62,11 @@ class HomeStatsRecycleViewAdapter(
             userService.update(user)
         }
 
+        if(item.id == ""){
+            item.id = UUID.randomUUID().toString()
+            userService.update(user)
+        }
+
         if (item.status == GameStatus.COMPLETED) {
             holder.status.text = "COMPLETAT"
             holder.status.setTextColor(ContextCompat.getColor(context, R.color.green))
@@ -69,7 +75,7 @@ class HomeStatsRecycleViewAdapter(
             holder.status.setTextColor(ContextCompat.getColor(context, R.color.orange))
         }
 
-        val noRounds = "Numar runde: " + (item.rounds?.size ?: 0)
+        val noRounds = "Numar runde: " + (item.rounds?.filter { it.isCompleted }?.size ?: 0)
 
         holder.noRounds.text = noRounds
 
