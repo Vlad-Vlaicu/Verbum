@@ -186,7 +186,7 @@ class StatsActivity : AppCompatActivity() {
             setDrawValues(false) // Disable drawing values on the chart
         }
 
-        val dataSet2 = LineDataSet(overallEntries, "Timul de reactie overall").apply {
+        val dataSet2 = LineDataSet(overallEntries, "Timpul de reactie mediu").apply {
             color = Color.RED
             lineWidth = 2f
             setCircleColor(Color.RED)
